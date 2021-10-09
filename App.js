@@ -1,59 +1,85 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, Text} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import MatchScreen from './components/matchScreen';
-import { NavigationContainer } from '@react-navigation/native';
-import ChatScreen from './components/chatScreen';
-import ProfileScreen from './components/profileScreen';
-import { Ionicons } from '@expo/vector-icons'
+import { StyleSheet, View, Text, Button, Alert} from 'react-native';
+import AppScreen from './components/appScreen';
+import LoadScreen from './components/loadScreen';
+import * as Facebook from 'expo-facebook';
+import * as SecureStore from "expo-secure-store"
 
 
-const TabNavigator = createBottomTabNavigator();     //creating the bottom tab navigator
-
+const tokenKeyName = 'token'
 export default class App extends Component {
 
+  constructor(){
+    super()
+    this.state = {
+      token: null,
+      loading: true
+    }
+    this.checkForToken()
+  }
+
+  async saveTokenToSecureStorage(_token){
+    SecureStore.setItemAsync(tokenKeyName, _token)
+    this.setState({
+      token: _token,
+      loading: false
+    })
+  }
+
+  async checkForToken(){
+    let _token = await SecureStore.getItemAsync(tokenKeyName)
+    this.setState({
+      token: _token,
+      loading: false
+    })
+  }
+
   render(){
+    if(this.state.loading === true){
+      return(
+        <LoadScreen/>
+      );
+    }
+    if(this.state.token === null){
+      return(
 
-    return(
+        <View style = {styles.container}>
+        <Button title= "Login with Facebook" onPress = {()=>{this.logIn()}}></Button>
+        </View>
+      );
+    }else{
+      return(
+      <AppScreen/>
+      );
+    }
+  }
 
-    <NavigationContainer>
-      <TabNavigator.Navigator screenOptions = {({route})=>({       //setting screen options for tab bar navigator
+  async logIn(){
+    try{
+      await Facebook.initializeAsync({appId: '886430345317387', appName: "Player2" })
+      const {type, token} = await Facebook.logInWithReadPermissionsAsync({
+        permissions: ['public_profile']
+      })
 
-        tabBarIcon: ({size, color, focused})=>{
+      if (type === "success"){
+        const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`)
+        this.saveTokenToSecureStorage(token)
+        const profile = await response.json()
+        Alert.alert(profile.name + ' Logged In Correctly')
+      }
 
-          let iconName
-
-          if (route.name === "Match"){                            //returning correct ionicon for each page
-            iconName = "people-circle-outline"
-          }else if (route.name === "Chat"){
-            iconName = "chatbubbles-outline"
-          }else if (route.name === "Profile"){
-            iconName = "person-circle-outline"
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />           //adding icons  to navbar
-
-        },
-        tabBarActiveTintColor: "chartreuse", 
-        tabBarStyle: {
-          backgroundColor: "black"                                              //other navbar settings
-        }
-      })}
-      initialRouteName = "Match">
-        <TabNavigator.Screen name="Match" component={MatchScreen}/>
-        <TabNavigator.Screen name="Chat" component={ChatScreen}/>
-        <TabNavigator.Screen name="Profile" component={ProfileScreen}/>
-      </TabNavigator.Navigator>
-    </NavigationContainer> 
-    );
+    }catch({message}){
+      console.log(message)
+    }
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
+    
   },
 });
