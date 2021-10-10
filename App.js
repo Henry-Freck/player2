@@ -67,6 +67,9 @@ export default class App extends Component {
         this.saveTokenToSecureStorage(token)
         const profile = await response.json()
         Alert.alert(profile.name + ' Logged In Correctly')
+        //TODO: once user is logged in, check firebase to see if they exist yet
+        //if they do: pull the UUID for the user and store it in a variable that we can access from other components
+        //if not: create a new UUID for the user and then do the same as above
       }
 
     }catch({message}){
