@@ -45,6 +45,7 @@ export default class App extends Component {
 
         <View style = {styles.container}>
         <Button title= "Login with Facebook" onPress = {()=>{this.logIn()}}></Button>
+        <Button title= "Shit I don't have facebook" onPress= {()=>{this.fakeLogIn()}}></Button>
         </View>
       );
     }else{
@@ -71,6 +72,11 @@ export default class App extends Component {
     }catch({message}){
       console.log(message)
     }
+  }
+
+  async fakeLogIn(){
+    this.saveTokenToSecureStorage("fake_token")
+    Alert.alert("TestUser Logged in Correctly")
   }
 }
 
