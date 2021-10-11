@@ -13,6 +13,8 @@ export default class ProfileScreen extends Component {
           style={styles.textField}
           onChangeText={text => this.onDisplayNameChange(text)}
         />
+        <Text style={styles.fieldHeaders}>Game Selector</Text>
+        
         {/*TODO: add more profile information entry fields (probably some sort of check list for what games, along with a text entry for gamertag, rank, etc. for each game)*/}        
       </ScrollView>
       {/*<Text style={{color:"white",fontSize:30}}>Edit and view your profile and preferences on this screen</Text>*/}
