@@ -57,12 +57,12 @@ export default class ProfileScreen extends Component {
       <ScrollView style={styles.scrollView}>
         <Text style={styles.fieldHeaders}>Display Name</Text>
         <TextInput 
-          {/*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/}
+          /*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/
           style={styles.textField}
           onChangeText={text => this.onDisplayNameChange(text)}
           placeholder='Enter a name to be displayed to other users'
         />
-        <Text style={styles.fieldHeaders}>Game Selector</Text>
+        <Text style={styles.fieldHeaders}>Current Game</Text>
         <SectionedMultiSelect
           items={gameListOptions}
           IconRenderer={Icon}
@@ -76,6 +76,14 @@ export default class ProfileScreen extends Component {
           showChips={false}
           hideSearch={true}
           single={true}
+        />
+        <Text style={styles.fieldHeaders}>Current Rating</Text>
+        <TextInput 
+          /*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/
+          style={styles.textField}
+          keyboardType = "number-pad"
+          onChangeText={text => this.onDisplayNameChange(text)}
+          placeholder='Enter a name to be displayed to other users'
         />
         {/*TODO: add more profile information entry fields (probably some sort of check list for what games, along with a text entry for gamertag, rank, etc. for each game)*/}        
       </ScrollView>
@@ -91,18 +99,19 @@ const styles = StyleSheet.create({
   //Style for the headers on each of the profile information entry fields
   fieldHeaders: {
     color: '#555555',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     flexDirection: 'column',
-    alignItems: 'flex-start'
+    alignItems: 'center'
   },
   //Style for the scroll view that will contain all the information entry fields
   scrollView: {
-    borderWidth: 10,
-    borderColor: "#f2f2f2",
+    flex: 1,
+//     borderWidth: 10,
+//     borderColor: "#f2f2f2",
     width: "100%",
-//    justifyContent: 'flex-start',
-    flexDirection: 'row',
-//    alignItems: 'flex-start'
+// //    justifyContent: 'flex-start',
+//     flexDirection: 'row',
+// //    alignItems: 'flex-start'
   },
   //Style for any text entry fields for entering profile information
   textField: {
