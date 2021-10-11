@@ -51,6 +51,11 @@ export default class ProfileScreen extends Component {
     //TODO: make this send the new display name to firebase
   }
 
+  //helper function to be called by the TextInput field for setting your in game rank
+  onRankChange = (newValue) => {
+    //TODO: make this send the new rank to firebase
+  }
+
   render(){
     return(
     <View style={styles.container}>
@@ -82,8 +87,8 @@ export default class ProfileScreen extends Component {
           /*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/
           style={styles.textField}
           keyboardType = "number-pad"
-          onChangeText={text => this.onDisplayNameChange(text)}
-          placeholder='Enter a name to be displayed to other users'
+          onChangeText={text => this.onRankChange(text)}
+          placeholder='Enter your rank'
         />
         {/*TODO: add more profile information entry fields (probably some sort of check list for what games, along with a text entry for gamertag, rank, etc. for each game)*/}        
       </ScrollView>
