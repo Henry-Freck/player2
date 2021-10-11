@@ -4,6 +4,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
+//Games to be displayed in the selector
 const gameListOptions = [
   { 
     name: 'Games',
@@ -33,13 +34,21 @@ export default class ProfileScreen extends Component {
   constructor(){
     super()
     this.state = {
+      //selectedItems is the list of games that have been selected
       selectedItems: [],
     }
   }
 
+  //helper function to be called by the SectionedMultiSelect for selecting games
   onGameSelectorItemsChange = (selectedItems) => {
+    //sets the state property
     this.setState({selectedItems})
     //TODO: make this function push new selected items to firebase
+  }
+
+  //helper function to be called by the TextInput field for setting display name
+  onDisplayNameChange = (newValue) => {
+    //TODO: make this send the new display name to firebase
   }
 
   render(){
@@ -48,7 +57,7 @@ export default class ProfileScreen extends Component {
       <ScrollView style={styles.scrollView}>
         <Text style={styles.fieldHeaders}>Display Name</Text>
         <TextInput 
-          //TODO: make the text input field take up the width of the screen, not sure why that isn't working
+          {/*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/}
           style={styles.textField}
           onChangeText={text => this.onDisplayNameChange(text)}
           placeholder='Enter a name to be displayed to other users'
@@ -59,12 +68,14 @@ export default class ProfileScreen extends Component {
           IconRenderer={Icon}
           uniqueKey='id'
           subKey='children'
-          selectText="Select the games that you want to match for"
+          selectText="Select the games you play"
           showDropDowns={false}
           readOnlyHeadings={true}
           onSelectedItemsChange={this.onGameSelectorItemsChange}
           selectedItems={this.state.selectedItems}
           showChips={false}
+          hideSearch={true}
+          single={true}
         />
         {/*TODO: add more profile information entry fields (probably some sort of check list for what games, along with a text entry for gamertag, rank, etc. for each game)*/}        
       </ScrollView>
@@ -75,9 +86,6 @@ export default class ProfileScreen extends Component {
 }
 
 
-function onDisplayNameChange(newValue){
-  //TODO: make this send the new display name to firebase
-}
 
 const styles = StyleSheet.create({
   //Style for the headers on each of the profile information entry fields
