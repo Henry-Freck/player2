@@ -1,8 +1,25 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, Text, TextInput} from 'react-native';
+import { StyleSheet, View, Text, TextInput, Alert} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import firebase from 'firebase'
+import { collection, addDoc } from "firebase/firestore"
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB8pxsOuMbDeJvX9dqzymkRROLIGZtSwAY",
+  authDomain: "player2-5b498.firebaseapp.com",
+  projectId: "player2-5b498",
+  storageBucket: "player2-5b498.appspot.com",
+  messagingSenderId: "77036678316",
+  appId: "1:77036678316:web:1ef62b94cff22f3eed0309",
+  measurementId: "G-YB0ZG7T821"
+};
+
+//initialize firebase
+if (firebase.apps.length == 0) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 //Games to be displayed in the selector
 const gameListOptions = [
@@ -48,7 +65,21 @@ export default class ProfileScreen extends Component {
 
   //helper function to be called by the TextInput field for setting display name
   onDisplayNameChange = (newValue) => {
-    //TODO: make this send the new display name to firebase
+    firebase.firestore().collection("Users").doc("TestUser1").set({
+      displayName: newValue,
+    }, {merge: true})
+    .then( () => {
+      console.log("set new display name")
+    })
+    firebase.firestore().collection("Users").doc("TestUser1").get().then( (doc) => {
+      if(!doc.exists) return
+      console.log("Document data: ", doc.data())
+    })
+  }
+
+  //helper function to be called by the TextInput field for setting your in game rank
+  onRankChange = (newValue) => {
+    //TODO: make this send the new rank to firebase
   }
 
   render(){
@@ -82,8 +113,8 @@ export default class ProfileScreen extends Component {
           /*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/
           style={styles.textField}
           keyboardType = "number-pad"
-          onChangeText={text => this.onDisplayNameChange(text)}
-          placeholder='Enter a name to be displayed to other users'
+          onChangeText={text => this.onRankChange(text)}
+          placeholder='Enter your rank'
         />
         {/*TODO: add more profile information entry fields (probably some sort of check list for what games, along with a text entry for gamertag, rank, etc. for each game)*/}        
       </ScrollView>

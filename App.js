@@ -41,7 +41,11 @@ export default class App extends Component {
     firebase.auth().onAuthStateChanged(user => {
       if (user != null) {
         console.log('We are authenticated now!');
+<<<<<<< HEAD
         Alert.alert('We authneticated with Fireabse!', `Hi ${JSON.stringify(user)}`);
+=======
+        Alert.alert('We authneticated with Fireabse!', `Hi ${user.displayName}`);
+>>>>>>> 67ab6c7b22ecb3e0c45d286b9b508fccb31ed049
       }
     });
   }
@@ -95,35 +99,47 @@ export default class App extends Component {
   }
 
   async logIn(){
-    try{
-      await Facebook.initializeAsync({appId: '886430345317387', appName: "Player2" })
-      const {type, token} = await Facebook.logInWithReadPermissionsAsync({
-        permissions: ['public_profile']
-      }) 
-
-      if (type === "success"){
-        const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`)
-        this.saveTokenToSecureStorage(token)
-        let credential = firebase.auth.FacebookAuthProvider.credential(token)
-        firebase.auth().signInWithCredential(credential).catch((error)=>{
-          console.log("Auth failed with error " + JSON.stringify(error))
-        })
-        const profile = await response.json()
-        Alert.alert(profile.name + ' Logged In Correctly')
-        //TODO: once user is logged in, check firebase to see if they exist yet
-        //if they do: pull the UUID for the user and store it in a variable that we can access from other components
-        //if not: create a new UUID for the user and then do the same as above
+    try {
+      //Seed documentation on course site at mobileappdev.teachable.com
+      //For default user names and passwords.
+      await Facebook.initializeAsync({
+        appId: '886430345317387',
+        appName: "player2"
+      });
+      const {
+        type,
+        token,
+        expires,
+        permissions,
+        declinedPermissions,
+      } = await Facebook.logInWithReadPermissionsAsync({
+        permissions: ['public_profile'],
+      });
+      if (type === 'success') {
+        // Get the user's name using Facebook's Graph API
+        const response = await fetch(
+          `https://graph.facebook.com/me?access_token=${token}`
+        );
+        let credential = firebase.auth.FacebookAuthProvider.credential(
+          token
+        );
+        firebase
+          .auth()
+          .signInWithCredential(credential)
+          .catch(error => {
+            console.log(
+              'Auth failed and here is the error ' + JSON.stringify(error)
+            );
+          });
+          credential = JSON.stringify(credential)
+        this.saveTokenToSecureStorage(token, credential);
+      } else {
+        // type === 'cancel'
       }
-
-    }catch({message}){
-      console.log(message)
+    } catch ({ message }) {
+      alert(`Facebook Login Error: ${message}`);
     }
   }
-
-  // async fakeLogIn(){
-  //   this.saveTokenToSecureStorage("fake_token")
-  //   Alert.alert("TestUser Logged in Correctly")
-  // }
 }
 
 const styles = StyleSheet.create({
