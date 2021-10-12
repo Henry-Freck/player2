@@ -41,7 +41,7 @@ export default class App extends Component {
     firebase.auth().onAuthStateChanged(user => {
       if (user != null) {
         console.log('We are authenticated now!');
-        Alert.alert('We authneticated with Fireabse!', `Hi ${user}`);
+        Alert.alert('We authneticated with Fireabse!', `Hi ${user.displayName}`);
       }
     });
   }
@@ -81,7 +81,7 @@ export default class App extends Component {
         <LoadScreen/>
       );
     }
-    if(this.state.token !== null){
+    if(this.state.token === null){
       return(
         <View style = {styles.container}>
         <Button title= "Login with Facebook" onPress = {()=>{this.logIn()}}></Button> 
