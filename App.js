@@ -81,7 +81,7 @@ export default class App extends Component {
         <LoadScreen/>
       );
     }
-    if(this.state.token !== null){
+    if(this.state.token === null){
       return(
         <View style = {styles.container}>
         <Button title= "Login with Facebook" onPress = {()=>{this.logIn()}}></Button> 
