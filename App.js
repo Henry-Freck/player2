@@ -67,7 +67,7 @@ export default class App extends Component {
   }
 
   async saveTokenToSecureStorage(_token, credential){
-    SecureStore.setItemAsync(tokenKeyName, _token)
+    SecureStore.setItemAsync("token", _token)
     SecureStore.setItemAsync("firebaseCredential", credential)
     this.setState({
       token: _token,
@@ -83,10 +83,8 @@ export default class App extends Component {
     }
     if(this.state.token === null){
       return(
-
         <View style = {styles.container}>
-        <Button title= "Login with Facebook" onPress = {()=>{this.logIn()}}></Button>
-        {/* <Button title= "Shit I don't have facebook" onPress= {()=>{this.fakeLogIn()}}></Button> */}
+        <Button title= "Login with Facebook" onPress = {()=>{this.logIn()}}></Button> 
         </View>
       );
     }else{
