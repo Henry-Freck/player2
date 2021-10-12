@@ -41,7 +41,7 @@ export default class App extends Component {
     firebase.auth().onAuthStateChanged(user => {
       if (user != null) {
         console.log('We are authenticated now!');
-        Alert.alert('We authneticated with Fireabse!', `Hi ${user}`);
+        Alert.alert('We authneticated with Fireabse!', `Hi ${JSON.stringify(user)}`);
       }
     });
   }
@@ -69,7 +69,7 @@ export default class App extends Component {
   async saveTokenToSecureStorage(_token, credential){
     SecureStore.setItemAsync("token", _token)
     SecureStore.setItemAsync("firebaseCredential", credential)
-    this.setState({
+    this.setState({ 
       token: _token,
       loading: false
     })
