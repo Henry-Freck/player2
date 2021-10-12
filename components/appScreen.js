@@ -5,7 +5,7 @@ import MatchScreen from './matchScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import ChatScreen from './chatScreen';
 import ProfileScreen from './profileScreen';
-import { Ionicons } from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons';
 
 
 const TabNavigator = createBottomTabNavigator();     //creating the bottom tab navigator
