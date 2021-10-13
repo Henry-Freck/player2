@@ -122,9 +122,10 @@ export default class App extends Component {
         let credential = firebase.auth.FacebookAuthProvider.credential(
           token
         );
+        console.log(credential)
         firebase
           .auth()
-          .signInWithCredential(credential)
+          .signInWithCredential(credential.oauthAccessToken)
           .catch(error => {
             console.log(
               'Auth failed and here is the error ' + JSON.stringify(error)
