@@ -73,12 +73,17 @@ export default class ProfileScreen extends Component {
       var userUUID = value
     })
     console.log(userUUID)
-    firebase.firestore().collection("Users").doc(userUUID).set({
-      displayName: newValue,
-    }, {merge: true})
-    .then( () => {
-      console.log("set new display name")
-    })
+    if(userUUID !== null){
+      firebase.firestore().collection("Users").doc(userUUID).set({
+        displayName: newValue,
+      }, {merge: true})
+      .then( () => {
+        console.log("set new display name")
+      })
+    }
+    else{
+      console.log("userUUID retrieval failed")
+    }
     //Uncomment the below lines to have the document data printed for debugging
     // firebase.firestore().collection("Users").doc(global.userUUID).get().then( (doc) => {
     //   if(!doc.exists) return
@@ -93,12 +98,17 @@ export default class ProfileScreen extends Component {
       var userUUID = value
     })
     console.log(userUUID)
-    firebase.firestore().collection("Users").doc(userUUID).set({
-      rank: newValue,
-    }, {merge: true})
-    .then( () => {
-      console.log("set new rank")
-    })
+    if(userUUID !== null){
+      firebase.firestore().collection("Users").doc(userUUID).set({
+        rank: newValue,
+      }, {merge: true})
+      .then( () => {
+        console.log("set new rank")
+      })
+    }
+    else{
+      console.log("userUUID retrieval failed")
+    }
     //Uncomment the below lines to have the document data printed for debugging
     // firebase.firestore().collection("Users").doc(global.userUUID).get().then( (doc) => {
     //   if(!doc.exists) return
