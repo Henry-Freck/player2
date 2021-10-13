@@ -41,11 +41,7 @@ export default class App extends Component {
     firebase.auth().onAuthStateChanged(user => {
       if (user != null) {
         console.log('We are authenticated now!');
-<<<<<<< HEAD
         Alert.alert('We authneticated with Fireabse!', `Hi ${JSON.stringify(user)}`);
-=======
-        Alert.alert('We authneticated with Fireabse!', `Hi ${user.displayName}`);
->>>>>>> 67ab6c7b22ecb3e0c45d286b9b508fccb31ed049
       }
     });
   }
@@ -112,9 +108,12 @@ export default class App extends Component {
         expires,
         permissions,
         declinedPermissions,
+        userId,
       } = await Facebook.logInWithReadPermissionsAsync({
-        permissions: ['public_profile'],
+        permissions: ['public_profile', 'email'],
       });
+      SecureStore.setItemAsync("userUUID", userId)
+      global.userUUID = userId
       if (type === 'success') {
         // Get the user's name using Facebook's Graph API
         const response = await fetch(
