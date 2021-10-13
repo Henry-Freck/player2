@@ -56,44 +56,59 @@ export default class ProfileScreen extends Component {
     }
   }
 
-  //helper function to be called by the SectionedMultiSelect for selecting games
-  onGameSelectorItemsChange = (selectedItems) => {
-    //sets the state property
-    this.setState({selectedItems})
-    //TODO: make this function push new selected items to firebase
-  }
+  //  Currently deprecated since we're only doing matchmaking for Valorant for the MVP
+  // // helper function to be called by the SectionedMultiSelect for selecting games
+  // onGameSelectorItemsChange = (selectedItems) => {
+  //   // sets the state property
+  //   this.setState({selectedItems})
+  //   // TODO: make this function push new selected items to firebase
+  // }
 
   //helper function to be called by the TextInput field for setting display name
   onDisplayNameChange = (newValue) => {
+    //TODO: Make this access the correct user based on username and insert the document if it is not present
     firebase.firestore().collection("Users").doc("TestUser1").set({
       displayName: newValue,
     }, {merge: true})
     .then( () => {
       console.log("set new display name")
     })
-    firebase.firestore().collection("Users").doc("TestUser1").get().then( (doc) => {
-      if(!doc.exists) return
-      console.log("Document data: ", doc.data())
-    })
+    //Uncomment the below lines to have the document data printed for debugging
+    // firebase.firestore().collection("Users").doc("TestUser1").get().then( (doc) => {
+    //   if(!doc.exists) return
+    //   console.log("Document data: ", doc.data())
+    // })
   }
 
   //helper function to be called by the TextInput field for setting your in game rank
   onRankChange = (newValue) => {
-    //TODO: make this send the new rank to firebase
+    //TODO: Make this access the correct user based on username and insert the document if it is not present
+    firebase.firestore().collection("Users").doc("TestUser1").set({
+      rank: newValue,
+    }, {merge: true})
+    .then( () => {
+      console.log("set new rank")
+    })
+    //Uncomment the below lines to have the document data printed for debugging
+    // firebase.firestore().collection("Users").doc("TestUser1").get().then( (doc) => {
+    //   if(!doc.exists) return
+    //   console.log("Document data: ", doc.data())
+    // })
   }
 
   render(){
     return(
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <Text style={styles.fieldHeaders}>Display Name</Text>
+        <Text style={styles.fieldHeaders}>Riot Name</Text>
         <TextInput 
           /*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/
           style={styles.textField}
           onChangeText={text => this.onDisplayNameChange(text)}
-          placeholder='Enter a name to be displayed to other users'
+          //TODO: prefill this field if the user has it set in their firestore document
+          placeholder='Enter your Riot Name and discriminator (i.e. John#1234)'
         />
-        <Text style={styles.fieldHeaders}>Current Game</Text>
+        {/* <Text style={styles.fieldHeaders}>Current Game</Text>
         <SectionedMultiSelect
           items={gameListOptions}
           IconRenderer={Icon}
@@ -107,18 +122,18 @@ export default class ProfileScreen extends Component {
           showChips={false}
           hideSearch={true}
           single={true}
-        />
-        <Text style={styles.fieldHeaders}>Current Rating</Text>
+        /> */}
+        <Text style={styles.fieldHeaders}>Current Rank</Text>
         <TextInput 
           /*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/
           style={styles.textField}
-          keyboardType = "number-pad"
+          // keyboardType = "number-pad"
           onChangeText={text => this.onRankChange(text)}
-          placeholder='Enter your rank'
+          //TODO: Prefill this field if the user has it set in their firestore document
+          placeholder='Enter your rank (i.e. Silver 3)'
         />
         {/*TODO: add more profile information entry fields (probably some sort of check list for what games, along with a text entry for gamertag, rank, etc. for each game)*/}        
       </ScrollView>
-      {/*<Text style={{color:"white",fontSize:30}}>Edit and view your profile and preferences on this screen</Text>*/}
     </View>
     );
   }
