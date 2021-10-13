@@ -1,10 +1,11 @@
-import React, {Component} from 'react';
+import React, {Component, useState}from 'react';
 import { StyleSheet, View, Text, TextInput, Alert} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import firebase from 'firebase'
 import { collection, addDoc } from "firebase/firestore"
+import {Picker} from '@react-native-picker/picker';
 
 const firebaseConfig = {
   apiKey: "AIzaSyB8pxsOuMbDeJvX9dqzymkRROLIGZtSwAY",
@@ -53,8 +54,11 @@ export default class ProfileScreen extends Component {
     this.state = {
       //selectedItems is the list of games that have been selected
       selectedItems: [],
+      skillLevel: "java"
     }
   }
+
+  
 
   //  Currently deprecated since we're only doing matchmaking for Valorant for the MVP
   // // helper function to be called by the SectionedMultiSelect for selecting games
@@ -82,6 +86,7 @@ export default class ProfileScreen extends Component {
 
   //helper function to be called by the TextInput field for setting your in game rank
   onRankChange = (newValue) => {
+    this.setState({skillLevel: newValue})
     //TODO: Make this access the correct user based on username and insert the document if it is not present
     firebase.firestore().collection("Users").doc("TestUser1").set({
       rank: newValue,
@@ -124,15 +129,19 @@ export default class ProfileScreen extends Component {
           single={true}
         /> */}
         <Text style={styles.fieldHeaders}>Current Rank</Text>
-        <TextInput 
-          /*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/
-          style={styles.textField}
-          // keyboardType = "number-pad"
-          onChangeText={text => this.onRankChange(text)}
-          //TODO: Prefill this field if the user has it set in their firestore document
-          placeholder='Enter your rank (i.e. Silver 3)'
-        />
-        {/*TODO: add more profile information entry fields (probably some sort of check list for what games, along with a text entry for gamertag, rank, etc. for each game)*/}        
+
+        {/*TODO: add more profile information entry fields (probably some sort of check list for what games, along with a text entry for gamertag, rank, etc. for each game)*/}
+
+        <Picker
+          selectedValue={this.state.skillLevel}
+          onValueChange={(itemValue) => this.onRankChange(itemValue)}
+        >
+          <Picker.Item label="Java" value="java" />
+          <Picker.Item label="JavaScript" value="js" />
+          <Picker.Item label="Python" value="python" />
+          <Picker.Item label="Haxe" value="haxe" />
+        </Picker>
+
       </ScrollView>
     </View>
     );
