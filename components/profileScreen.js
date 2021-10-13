@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import firebase from 'firebase'
 import { collection, addDoc } from "firebase/firestore"
 import {Picker} from '@react-native-picker/picker';
+import * as SecureStore from "expo-secure-store"
 
 const firebaseConfig = {
   apiKey: "AIzaSyB8pxsOuMbDeJvX9dqzymkRROLIGZtSwAY",
@@ -21,6 +22,7 @@ const firebaseConfig = {
 if (firebase.apps.length == 0) {
   firebase.initializeApp(firebaseConfig);
 }
+
 
 //Games to be displayed in the selector
 const gameListOptions = [
@@ -71,14 +73,23 @@ export default class ProfileScreen extends Component {
   //helper function to be called by the TextInput field for setting display name
   onDisplayNameChange = (newValue) => {
     //TODO: Make this access the correct user based on username and insert the document if it is not present
-    firebase.firestore().collection("Users").doc("TestUser1").set({
-      displayName: newValue,
-    }, {merge: true})
-    .then( () => {
-      console.log("set new display name")
+    SecureStore.getItemAsync("userUUID").then( (value) => {
+      var userUUID = value
     })
+    console.log(userUUID)
+    if(userUUID !== null){
+      firebase.firestore().collection("Users").doc(userUUID).set({
+        displayName: newValue,
+      }, {merge: true})
+      .then( () => {
+        console.log("set new display name")
+      })
+    }
+    else{
+      console.log("userUUID retrieval failed")
+    }
     //Uncomment the below lines to have the document data printed for debugging
-    // firebase.firestore().collection("Users").doc("TestUser1").get().then( (doc) => {
+    // firebase.firestore().collection("Users").doc(global.userUUID).get().then( (doc) => {
     //   if(!doc.exists) return
     //   console.log("Document data: ", doc.data())
     // })
@@ -88,14 +99,23 @@ export default class ProfileScreen extends Component {
   onRankChange = (newValue) => {
     this.setState({skillLevel: newValue})
     //TODO: Make this access the correct user based on username and insert the document if it is not present
-    firebase.firestore().collection("Users").doc("TestUser1").set({
-      rank: newValue,
-    }, {merge: true})
-    .then( () => {
-      console.log("set new rank")
+    SecureStore.getItemAsync("userUUID").then( (value) => {
+      var userUUID = value
     })
+    console.log(userUUID)
+    if(userUUID !== null){
+      firebase.firestore().collection("Users").doc(userUUID).set({
+        rank: newValue,
+      }, {merge: true})
+      .then( () => {
+        console.log("set new rank")
+      })
+    }
+    else{
+      console.log("userUUID retrieval failed")
+    }
     //Uncomment the below lines to have the document data printed for debugging
-    // firebase.firestore().collection("Users").doc("TestUser1").get().then( (doc) => {
+    // firebase.firestore().collection("Users").doc(global.userUUID).get().then( (doc) => {
     //   if(!doc.exists) return
     //   console.log("Document data: ", doc.data())
     // })
