@@ -28,6 +28,62 @@ export default class MatchScreen extends Component {
     //code here that gets performed when the no button is pressed
   }
 
+  rankDistance(rank1, rank2){
+    let rank1Int = rankToInt(rank1)
+    let rank2Int = rankToInt(rank2)
+    return (rank2Int - rank1Int)
+
+  }
+
+  rankToInt(rank){
+    if(rank === "Iron 1"){
+      return 0
+    }else if(rank === "Iron 2"){
+    return 1
+    }else if(rank === "Iron 3"){
+      return 2
+    }else if(rank === "Bronze 1"){
+      return 3
+    }else if(rank === "Bronze 2"){
+      return 4
+    }else if(rank === "Bronze 3"){
+      return 5
+    }else if(rank === "Silver 1"){
+      return 6
+    }else if(rank === "Silver 2"){
+      return 7
+    }else if(rank === "Silver 3"){
+      return 8
+    }else if(rank === "Gold 1"){
+      return 9
+    }else if(rank === "Gold 2"){
+      return 10
+    }else if(rank === "Gold 3"){
+      return 11
+    }else if(rank === "Platinum 1"){
+      return 12
+    }else if(rank === "Platinum 2"){
+      return 13
+    }else if(rank === "Platinum 3"){
+      return 14
+    }else if(rank === "Diamond 1"){
+      return 15
+    }else if(rank === "Diamond 2"){
+      return 16
+    }else if(rank === "Diamond 3"){
+      return 17
+    }else if(rank === "Immortal 1"){
+      return 18
+    }else if(rank === "Immortal 2"){
+      return 19
+    }else if(rank === "Immortal 3"){
+      return 20
+    }else if(rank === "Radiant"){
+      return 21
+    }
+  }
+
+
   render(){
     return(
     <View style={styles.container}>
