@@ -28,12 +28,14 @@ export default class MatchScreen extends Component {
     super()
     this.state = {
       potentialMatches: [],
+      matchIds: [],
       currentMatch: {
         displayName: "Hit Refresh!",
         rank: "N/A",
         id: "null"
       },
-      matchIndex: 0
+      matchIndex: 0,
+      matchId: "null"
     }
   }
 
@@ -94,36 +96,48 @@ export default class MatchScreen extends Component {
 
   yesButton = async () => {
     let userUUID = await SecureStore.getItemAsync("userUUID")
-    var otherUUID = this.state.currentMatch.id
+    var otherUUID = this.state.matchIds[this.state.matchIndex]
+    console.log(otherUUID)
+    console.log(typeof(otherUUID))
     if(userUUID != null){
-      var ourDoc = await firebase.firestore().collection("Users").doc(userUUID).get()
-      const ourDocRef = firebase.firestore(app).collection("Users").doc()
-      var otherUserDoc = await firebase.firestore().collection("Users").doc(otherUUID).get()
-      // await updateDoc(ourDoc, {
-      //   swipedYesOn: arrayUnion(otherUUID)
-      // })
-      await ourDocRef.update({
-        swipedYesOnBy: firebase.firestore.FieldValue.arrayUnion(otherUUID)
+      let db = firebase.firestore()
+      const FieldValue = firebase.firestore.FieldValue
+      let ourDocRef = db.collection("Users").doc(userUUID)
+      let updateOurList = ourDocRef.update("swipedYesOn", FieldValue.arrayUnion(otherUUID))
+      let otherDocRef = db.collection("Users").doc(otherUUID)
+      let updateOtherList = otherDocRef.update("swipedYesOnBy", FieldValue.arrayUnion(userUUID))
+      var mInd = this.state.matchIndex + 1
+      var matches = this.state.potentialMatches
+      this.setState({
+        matchIndex: mInd,
+        currentMatch: matches[mInd]
       })
-      // await updateDoc(otherUserDoc, {
-      //   swipedYesOnBy: arrayUnion(userUUID)
-      // })
     }
     else{
       console.log("failed to retrieve userUUID")
     }
-
-
-    
-    //enter the code here that runs when the yes button is pressed
-    //set our user's "swipedYesOn" array to contain this user
-    //set this user's "swipedYesOnBy" array to contain our user
   }
 
-  async noButton(otherUUID){
-    //code here that gets performed when the no button is pressed
-    //set our user's "swipedNoOn" array to contain this user
-    //set this user's "swipedNoOnBy" array to contain our user
+  noButton = async (otherUUID) => {
+    let userUUID = await SecureStore.getItemAsync("userUUID")
+    var otherUUID = this.state.matchIds[this.state.matchIndex]
+    if(userUUID != null){
+      let db = firebase.firestore()
+      const FieldValue = firebase.firestore.FieldValue
+      let ourDocRef = db.collection("Users").doc(userUUID)
+      let updateOurList = ourDocRef.update("swipedNoOn", FieldValue.arrayUnion(otherUUID))
+      let otherDocRef = db.collection("Users").doc(otherUUID)
+      let updateOtherList = otherDocRef.update("swipedNoOnBy", FieldValue.arrayUnion(userUUID))
+      var mInd = this.state.matchIndex + 1
+      var matches = this.state.potentialMatches
+      this.setState({
+        matchIndex: mInd,
+        currentMatch: matches[mInd]
+      })
+    }
+    else{
+      console.log("failed to retrieve userUUID")
+    }
   }
 
   refreshButton = async () => {
@@ -132,10 +146,12 @@ export default class MatchScreen extends Component {
     const snapshot = await firebase.firestore().collection("Users").get()
     //map on distance in rank, probably need rank comparison function
     var matches = []
+    var ids = []
     var myRank = "none"
     snapshot.forEach((doc) => {
       if(doc.id !== userUUID){
         matches.push(doc.data())
+        ids.push(doc.id)
       }
       else{
         myRank = doc.data().rank
@@ -160,10 +176,13 @@ export default class MatchScreen extends Component {
     //   console.log(match)
     //   console.log(match.rank)
     // })
+    var id = matches[0].id
     this.setState({
       potentialMatches: matches,
       matchIndex: 0,
-      currentMatch: matches[0]
+      currentMatch: matches[0],
+      matchIds: ids,
+      matchId: ids[0] 
     })
   }
 
