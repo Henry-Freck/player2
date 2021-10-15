@@ -72,11 +72,9 @@ export default class ProfileScreen extends Component {
   // }
 
   //helper function to be called by the TextInput field for setting display name
-  onDisplayNameChange = (newValue) => {
+  async onDisplayNameChange(newValue){
     //TODO: Make this access the correct user based on username and insert the document if it is not present
-    SecureStore.getItemAsync("userUUID").then( (value) => {
-      var userUUID = value
-    })
+    await SecureStore.getItemAsync("userUUID")
     console.log(userUUID)
     if(userUUID !== null){
       firebase.firestore().collection("Users").doc(userUUID).set({
