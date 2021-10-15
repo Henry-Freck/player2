@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import { StyleSheet, View, Text, Button} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import firebase from 'firebase'
 import * as SecureStore from "expo-secure-store"
 import { collection, query, where, getDocs } from 'firebase/firestore'
@@ -56,27 +55,13 @@ export default class MatchScreen extends Component {
   render(){
     return(
     <View style={styles.container}>
-      <View style={styles.playerInfo}>
-        <Text style={{color:"white",fontSize:30}}>The Player Name Will Go Here!</Text>
-        <Text style={{color:"white",fontSize:30}}>Rank</Text>
-        <Text style={{color:"white",fontSize:30}}>The player role will go here</Text>
-      </View>
+      <Text style={{color:"white",fontSize:30}}>The Player Name Will Go Here!</Text>
+      <Text style={{color:"white",fontSize:30}}>Rank</Text>
+      <Text style={{color:"white",fontSize:30}}>The Player Name Will Go Here!</Text>
 
-<<<<<<< HEAD
       <Button title="Yes" onPress={this.yesButton}>Hello there</Button>
       <Button title="No" onPress={this.noButton}>Hello there</Button>
       <Button title="refresh" onPress={this.refreshButton}>Refresh</Button>
-=======
-      <View style={styles.buttons}>
-        <TouchableOpacity style = {styles.noButton} onPress = {this.noButton}>
-          <Text sytle = {styles.noText}>NO</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style = {styles.noButton} onPress = {this.yesButton}>
-          <Text sytle = {styles.noText}>YES</Text>
-        </TouchableOpacity>
-      </View>
->>>>>>> a84a46dcdc9c93e56a97df997b91de228421e70c
 
     </View>
     );
@@ -87,29 +72,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  playerInfo: {
-    flex:1,
-    flexDirection: "column",
-    justifyContent: "space-evenly",
-    alignItems: 'center'
-  },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: 'space-evenly',
-    
-
-  },
-  noButton: {
-    backgroundColor: "white",
-    padding: 20,
-    paddingRight: 60,
-    paddingLeft: 60
-  
-
-
-  },
-  noText: {
-
-  }
 });

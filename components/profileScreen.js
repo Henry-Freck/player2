@@ -74,11 +74,7 @@ export default class ProfileScreen extends Component {
   //helper function to be called by the TextInput field for setting display name
   async onDisplayNameChange(newValue){
     //TODO: Make this access the correct user based on username and insert the document if it is not present
-<<<<<<< HEAD
     let userUUID = await SecureStore.getItemAsync("userUUID")
-=======
-    let userUUID = await SecureStore.getItemAsync("userUUID");
->>>>>>> a84a46dcdc9c93e56a97df997b91de228421e70c
     console.log(userUUID)
     if(userUUID !== null){
       firebase.firestore().collection("Users").doc(userUUID).set({
@@ -203,8 +199,6 @@ async onRankChange(newValue){
           <Picker.Item label="Immortal 2" value="Immortal 2" />
           <Picker.Item label="Immortal 3" value="Immortal 3" />
           <Picker.Item label="Radiant" value="Radiant" />
-<<<<<<< HEAD
-=======
 
         </Picker>
 
@@ -230,7 +224,6 @@ async onRankChange(newValue){
           <Picker.Item label="Sova" value="Sova" />
           <Picker.Item label="Viper" value="Viper" />
           <Picker.Item label="Yoru" value="Yoru" />
->>>>>>> a84a46dcdc9c93e56a97df997b91de228421e70c
         </Picker>
 
       </ScrollView>
