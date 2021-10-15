@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, Text, Button} from 'react-native';
+import { StyleSheet, View, Text, Button, Alert} from 'react-native';
 import firebase from 'firebase'
 import * as SecureStore from "expo-secure-store"
 import { collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
@@ -99,7 +99,12 @@ export default class MatchScreen extends Component {
     var otherUUID = this.state.matchIds[this.state.matchIndex]
     console.log(otherUUID)
     console.log(typeof(otherUUID))
+    var otherUser = await firebase.firestore().collection("Users").doc(otherUUID).get()
     if(userUUID != null){
+      console.log(typeof(otherUser.data()))
+      if("swipedYesOn" in otherUser.data() && otherUser.data().swipedYesOn.includes(userUUID)){
+        Alert.alert("You matched with " + otherUser.data().displayName + "!\nAdd them now to start playing!")
+      }
       let db = firebase.firestore()
       const FieldValue = firebase.firestore.FieldValue
       let ourDocRef = db.collection("Users").doc(userUUID)

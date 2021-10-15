@@ -57,9 +57,10 @@ export default class App extends Component {
   async logIn(){
     try{
       await Facebook.initializeAsync({appId: '886430345317387', appName: "Player2" })
-      const {type, token} = await Facebook.logInWithReadPermissionsAsync({
+      const {type, token, userId} = await Facebook.logInWithReadPermissionsAsync({
         permissions: ['public_profile']
       })
+      SecureStore.setItemAsync("userUUID", userId)
 
       if (type === "success"){
         const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`)
