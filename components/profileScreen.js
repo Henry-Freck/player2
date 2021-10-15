@@ -56,7 +56,8 @@ export default class ProfileScreen extends Component {
     this.state = {
       //selectedItems is the list of games that have been selected
       selectedItems: [],
-      skillLevel: "java"
+      skillLevel: "Iron I",
+      mainCharacter: "Astra"
     }
   }
 
@@ -119,6 +120,30 @@ async onRankChange(newValue){
     // })
   }
 
+  async onMainChange(newValue){
+    this.setState({mainCharacter: newValue})
+    //TODO: Make this access the correct user based on username and insert the document if it is not present
+    let userUUID = await SecureStore.getItemAsync("userUUID");
+    console.log(userUUID)
+    if(userUUID !== null){
+      firebase.firestore().collection("Users").doc(userUUID).set({
+        main: newValue,
+      }, {merge: true})
+      .then( () => {
+        console.log("set new main")
+      })
+    }
+    else{
+      console.log("userUUID retrieval failed")
+    }
+    //Uncomment the below lines to have the document data printed for debugging
+    // firebase.firestore().collection("Users").doc(global.userUUID).get().then( (doc) => {
+    //   if(!doc.exists) return
+    //   console.log("Document data: ", doc.data())
+    // })
+  }
+
+
   render(){
     return(
     <View style={styles.container}>
@@ -154,10 +179,52 @@ async onRankChange(newValue){
           selectedValue={this.state.skillLevel}
           onValueChange={(itemValue) => this.onRankChange(itemValue)}
         >
-          <Picker.Item label="Java" value="java" />
-          <Picker.Item label="JavaScript" value="js" />
-          <Picker.Item label="Python" value="python" />
-          <Picker.Item label="Haxe" value="haxe" />
+          <Picker.Item label="Iron I" value="Iron I" />
+          <Picker.Item label="Iron II" value="Iron II" />
+          <Picker.Item label="Iron III" value="Iron III" />
+          <Picker.Item label="Bronze I" value="Bronze I" />
+          <Picker.Item label="Bronze II" value="Bronze II" />
+          <Picker.Item label="Bronze III" value="Bronze III" />
+          <Picker.Item label="Silver I" value="Silver I" />
+          <Picker.Item label="Silver II" value="Silver II" />
+          <Picker.Item label="Silver III" value="Silver III" />
+          <Picker.Item label="Gold I" value="Gold I" />
+          <Picker.Item label="Gold II" value="Gold II" />
+          <Picker.Item label="Gold III" value="Gold III" />
+          <Picker.Item label="Platinum I" value="Platinum I" />
+          <Picker.Item label="Platinum II" value="Platinum II" />
+          <Picker.Item label="Platinum III" value="Platinum III" />
+          <Picker.Item label="Diamond I" value="Diamond I" />
+          <Picker.Item label="Diamond II" value="Diamond II" />
+          <Picker.Item label="Diamond III" value="Diamond III" />
+          <Picker.Item label="Immortal" value="Immortal" />
+          <Picker.Item label="Radiant" value="Radiant" />
+
+        </Picker>
+
+        <Text style={styles.fieldHeaders}>Current Main</Text>
+
+        <Picker
+          selectedValue={this.state.mainCharacter}
+          onValueChange={(itemValue) => this.onMainChange(itemValue)}
+        >
+          <Picker.Item label="Astra" value="Astra" />
+          <Picker.Item label="Breach" value="Breach" />
+          <Picker.Item label="Brimstone" value="Brimstone" />
+          <Picker.Item label="Cypher" value="Cypher" />
+          <Picker.Item label="Jett" value="Jett" />
+          <Picker.Item label="KAY/O" value="KAY/O" />
+          <Picker.Item label="Killjoy" value="Killjoy" />
+          <Picker.Item label="Omen" value="Omen" />
+          <Picker.Item label="Pheonix" value="Pheonix" />
+          <Picker.Item label="Raze" value="Raze" />
+          <Picker.Item label="Reyna" value="Reyna" />
+          <Picker.Item label="Sage" value="Sage" />
+          <Picker.Item label="Skye" value="Skye" />
+          <Picker.Item label="Sova" value="Sova" />
+          <Picker.Item label="Viper" value="Viper" />
+          <Picker.Item label="Yoru" value="Yoru" />
+
         </Picker>
 
       </ScrollView>
