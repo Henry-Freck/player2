@@ -73,7 +73,6 @@ export default class ProfileScreen extends Component {
 
   //helper function to be called by the TextInput field for setting display name
   async onDisplayNameChange(newValue){
-    //TODO: Make this access the correct user based on username and insert the document if it is not present
     let userUUID = await SecureStore.getItemAsync("userUUID")
     console.log(userUUID)
     if(userUUID !== null){
@@ -97,7 +96,6 @@ export default class ProfileScreen extends Component {
   //helper function to be called by the TextInput field for setting your in game rank
 async onRankChange(newValue){
     this.setState({skillLevel: newValue})
-    //TODO: Make this access the correct user based on username and insert the document if it is not present
     let userUUID = await SecureStore.getItemAsync("userUUID");
     console.log(userUUID)
     if(userUUID !== null){

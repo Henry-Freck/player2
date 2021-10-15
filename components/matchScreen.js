@@ -27,31 +27,6 @@ export default class MatchScreen extends Component {
     }
   }
 
-  async yesButton(otherUUID){
-    let userUUID = await SecureStore.getItemAsync("userUUID")
-
-    
-    //enter the code here that runs when the yes button is pressed
-    //set our user's "swipedYesOn" array to contain this user
-    //set this user's "swipedYesOnBy" array to contain our user
-  }
-
-  async noButton(otherUUID){
-    //code here that gets performed when the no button is pressed
-    //set our user's "swipedNoOn" array to contain this user
-    //set this user's "swipedNoOnBy" array to contain our user
-  }
-
-  async refreshButton(){
-    //get users collection
-    let userUUID = await SecureStore.getItemAsync("userUUID")
-    const snapshot = firebase.firestore().collection("Users").get()
-
-    //map on distance in rank, probably need rank comparison function
-    //sort on mapped distance
-    //display first user
-  }
-
   rankDistance(rank1, rank2){
     let rank1Int = rankToInt(rank1)
     let rank2Int = rankToInt(rank2)
@@ -106,6 +81,63 @@ export default class MatchScreen extends Component {
       return 21
     }
   }
+
+  async yesButton(otherUUID){
+    let userUUID = await SecureStore.getItemAsync("userUUID")
+
+    
+    //enter the code here that runs when the yes button is pressed
+    //set our user's "swipedYesOn" array to contain this user
+    //set this user's "swipedYesOnBy" array to contain our user
+  }
+
+  async noButton(otherUUID){
+    //code here that gets performed when the no button is pressed
+    //set our user's "swipedNoOn" array to contain this user
+    //set this user's "swipedNoOnBy" array to contain our user
+  }
+
+  async refreshButton(){
+    //get users collection
+    let userUUID = await SecureStore.getItemAsync("userUUID")
+    const snapshot = await firebase.firestore().collection("Users").get()
+    //map on distance in rank, probably need rank comparison function
+    var matches = []
+    var myRank = "none"
+    snapshot.forEach((doc) => {
+      if(doc.id !== userUUID){
+        matches.push(doc.data())
+      }
+      else{
+        myRank = doc.data().rank
+        // console.log(myRank)
+      }
+      // console.log(doc.data())
+    })
+    matches.sort((match) => {
+      rank = match.rank
+      console.log(match)
+      console.log(typeof(rank))
+      console.log(typeof(myRank))
+      try{
+        var rankDist = this.rankDistance(myRank, rank)
+      }catch(e){
+        console.log(e)
+      }
+      return rankDist
+      return 1
+    })
+    // matches.forEach((match) => {
+    //   console.log("found match")
+    //   console.log(match)
+    //   console.log(match.rank)
+    // })
+
+    
+    //sort on mapped distance
+    //display first user
+  }
+
 
   render(){
     return(
