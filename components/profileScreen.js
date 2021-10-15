@@ -56,7 +56,8 @@ export default class ProfileScreen extends Component {
     this.state = {
       //selectedItems is the list of games that have been selected
       selectedItems: [],
-      skillLevel: "java"
+      skillLevel: "Iron I",
+      mainCharacter: "Astra"
     }
   }
 
@@ -117,6 +118,30 @@ async onRankChange(newValue){
     // })
   }
 
+  async onMainChange(newValue){
+    this.setState({mainCharacter: newValue})
+    //TODO: Make this access the correct user based on username and insert the document if it is not present
+    let userUUID = await SecureStore.getItemAsync("userUUID");
+    console.log(userUUID)
+    if(userUUID !== null){
+      firebase.firestore().collection("Users").doc(userUUID).set({
+        main: newValue,
+      }, {merge: true})
+      .then( () => {
+        console.log("set new main")
+      })
+    }
+    else{
+      console.log("userUUID retrieval failed")
+    }
+    //Uncomment the below lines to have the document data printed for debugging
+    // firebase.firestore().collection("Users").doc(global.userUUID).get().then( (doc) => {
+    //   if(!doc.exists) return
+    //   console.log("Document data: ", doc.data())
+    // })
+  }
+
+
   render(){
     return(
     <View style={styles.container}>
@@ -174,6 +199,31 @@ async onRankChange(newValue){
           <Picker.Item label="Immortal 2" value="Immortal 2" />
           <Picker.Item label="Immortal 3" value="Immortal 3" />
           <Picker.Item label="Radiant" value="Radiant" />
+
+        </Picker>
+
+        <Text style={styles.fieldHeaders}>Current Main</Text>
+
+        <Picker
+          selectedValue={this.state.mainCharacter}
+          onValueChange={(itemValue) => this.onMainChange(itemValue)}
+        >
+          <Picker.Item label="Astra" value="Astra" />
+          <Picker.Item label="Breach" value="Breach" />
+          <Picker.Item label="Brimstone" value="Brimstone" />
+          <Picker.Item label="Cypher" value="Cypher" />
+          <Picker.Item label="Jett" value="Jett" />
+          <Picker.Item label="KAY/O" value="KAY/O" />
+          <Picker.Item label="Killjoy" value="Killjoy" />
+          <Picker.Item label="Omen" value="Omen" />
+          <Picker.Item label="Pheonix" value="Pheonix" />
+          <Picker.Item label="Raze" value="Raze" />
+          <Picker.Item label="Reyna" value="Reyna" />
+          <Picker.Item label="Sage" value="Sage" />
+          <Picker.Item label="Skye" value="Skye" />
+          <Picker.Item label="Sova" value="Sova" />
+          <Picker.Item label="Viper" value="Viper" />
+          <Picker.Item label="Yoru" value="Yoru" />
         </Picker>
 
       </ScrollView>
