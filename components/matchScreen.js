@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { StyleSheet, View, Text, Button} from 'react-native';
 import firebase from 'firebase'
 import * as SecureStore from "expo-secure-store"
-import { collection, query, where, getDocs } from 'firebase/firestore'
+import { collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: "AIzaSyB8pxsOuMbDeJvX9dqzymkRROLIGZtSwAY",
@@ -16,7 +16,7 @@ const firebaseConfig = {
 
 //initialize firebase
 if (firebase.apps.length == 0) {
-  firebase.initializeApp(firebaseConfig);
+  var app = firebase.initializeApp(firebaseConfig);
 }
 
 export default class MatchScreen extends Component {
@@ -30,7 +30,8 @@ export default class MatchScreen extends Component {
       potentialMatches: [],
       currentMatch: {
         displayName: "Hit Refresh!",
-        rank: "N/A"
+        rank: "N/A",
+        id: "null"
       },
       matchIndex: 0
     }
@@ -91,8 +92,27 @@ export default class MatchScreen extends Component {
     }
   }
 
-  async yesButton(otherUUID){
+  yesButton = async () => {
     let userUUID = await SecureStore.getItemAsync("userUUID")
+    var otherUUID = this.state.currentMatch.id
+    if(userUUID != null){
+      var ourDoc = await firebase.firestore().collection("Users").doc(userUUID).get()
+      const ourDocRef = firebase.firestore(app).collection("Users").doc()
+      var otherUserDoc = await firebase.firestore().collection("Users").doc(otherUUID).get()
+      // await updateDoc(ourDoc, {
+      //   swipedYesOn: arrayUnion(otherUUID)
+      // })
+      await ourDocRef.update({
+        swipedYesOnBy: firebase.firestore.FieldValue.arrayUnion(otherUUID)
+      })
+      // await updateDoc(otherUserDoc, {
+      //   swipedYesOnBy: arrayUnion(userUUID)
+      // })
+    }
+    else{
+      console.log("failed to retrieve userUUID")
+    }
+
 
     
     //enter the code here that runs when the yes button is pressed
@@ -128,13 +148,12 @@ export default class MatchScreen extends Component {
     //   console.log(match)
     //   console.log(typeof(rank))
     //   console.log(typeof(myRank))
-    //   try{
+    //   // try{
     //     var rankDist = this.rankDistance(myRank, rank)
-    //   }catch(e){
-    //     console.log(e)
-    //   }
+    //   // }catch(e){
+    //     // console.log(e)
+    //   // }
     //   return rankDist
-    //   return 1
     // })
     // matches.forEach((match) => {
     //   console.log("found match")
@@ -146,10 +165,6 @@ export default class MatchScreen extends Component {
       matchIndex: 0,
       currentMatch: matches[0]
     })
-
-    
-    //sort on mapped distance
-    //display first user
   }
 
 
