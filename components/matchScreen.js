@@ -20,10 +20,19 @@ if (firebase.apps.length == 0) {
 }
 
 export default class MatchScreen extends Component {
+  componentDidMount(){
+    constructor()
+  }
+
   constructor(){
     super()
     this.state = {
       potentialMatches: [],
+      currentMatch: {
+        displayName: "Hit Refresh!",
+        rank: "N/A"
+      },
+      matchIndex: 0
     }
   }
 
@@ -97,7 +106,7 @@ export default class MatchScreen extends Component {
     //set this user's "swipedNoOnBy" array to contain our user
   }
 
-  async refreshButton(){
+  refreshButton = async () => {
     //get users collection
     let userUUID = await SecureStore.getItemAsync("userUUID")
     const snapshot = await firebase.firestore().collection("Users").get()
@@ -114,24 +123,29 @@ export default class MatchScreen extends Component {
       }
       // console.log(doc.data())
     })
-    matches.sort((match) => {
-      rank = match.rank
-      console.log(match)
-      console.log(typeof(rank))
-      console.log(typeof(myRank))
-      try{
-        var rankDist = this.rankDistance(myRank, rank)
-      }catch(e){
-        console.log(e)
-      }
-      return rankDist
-      return 1
-    })
+    // matches.sort((match) => {
+    //   rank = match.rank
+    //   console.log(match)
+    //   console.log(typeof(rank))
+    //   console.log(typeof(myRank))
+    //   try{
+    //     var rankDist = this.rankDistance(myRank, rank)
+    //   }catch(e){
+    //     console.log(e)
+    //   }
+    //   return rankDist
+    //   return 1
+    // })
     // matches.forEach((match) => {
     //   console.log("found match")
     //   console.log(match)
     //   console.log(match.rank)
     // })
+    this.setState({
+      potentialMatches: matches,
+      matchIndex: 0,
+      currentMatch: matches[0]
+    })
 
     
     //sort on mapped distance
@@ -142,9 +156,9 @@ export default class MatchScreen extends Component {
   render(){
     return(
     <View style={styles.container}>
-      <Text style={{color:"white",fontSize:30}}>The Player Name Will Go Here!</Text>
-      <Text style={{color:"white",fontSize:30}}>Rank</Text>
-      <Text style={{color:"white",fontSize:30}}>The Player Name Will Go Here!</Text>
+      <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.displayName}</Text>
+      <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.rank}</Text>
+      {/* <Text style={{color:"white",fontSize:30}}>The Player Name Will Go Here!</Text> */}
 
       <Button title="Yes" onPress={this.yesButton}>Hello there</Button>
       <Button title="No" onPress={this.noButton}>Hello there</Button>
