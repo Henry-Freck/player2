@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { StyleSheet, View, Text, Button} from 'react-native';
 import firebase from 'firebase'
 import * as SecureStore from "expo-secure-store"
+import { collection, query, where, getDocs } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: "AIzaSyB8pxsOuMbDeJvX9dqzymkRROLIGZtSwAY",
@@ -19,12 +20,36 @@ if (firebase.apps.length == 0) {
 }
 
 export default class MatchScreen extends Component {
-  async yesButton(){
-    //enter the code here that runs when the yes button is pressed
+  constructor(){
+    super()
+    this.state = {
+      potentialMatches: [],
+    }
   }
 
-  async noButton(){
+  async yesButton(otherUUID){
+    let userUUID = await SecureStore.getItemAsync("userUUID")
+
+    
+    //enter the code here that runs when the yes button is pressed
+    //set our user's "swipedYesOn" array to contain this user
+    //set this user's "swipedYesOnBy" array to contain our user
+  }
+
+  async noButton(otherUUID){
     //code here that gets performed when the no button is pressed
+    //set our user's "swipedNoOn" array to contain this user
+    //set this user's "swipedNoOnBy" array to contain our user
+  }
+
+  async refreshButton(){
+    //get users collection
+    let userUUID = await SecureStore.getItemAsync("userUUID")
+    const snapshot = firebase.firestore().collection("Users").get()
+
+    //map on distance in rank, probably need rank comparison function
+    //sort on mapped distance
+    //display first user
   }
 
   render(){
@@ -35,7 +60,8 @@ export default class MatchScreen extends Component {
       <Text style={{color:"white",fontSize:30}}>The Player Name Will Go Here!</Text>
 
       <Button title="Yes" onPress={this.yesButton}>Hello there</Button>
-      <Button title="No" onPress={this.yesButton}>Hello there</Button>
+      <Button title="No" onPress={this.noButton}>Hello there</Button>
+      <Button title="refresh" onPress={this.refreshButton}>Refresh</Button>
 
     </View>
     );
