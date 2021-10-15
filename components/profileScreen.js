@@ -74,7 +74,7 @@ export default class ProfileScreen extends Component {
   //helper function to be called by the TextInput field for setting display name
   async onDisplayNameChange(newValue){
     //TODO: Make this access the correct user based on username and insert the document if it is not present
-    await SecureStore.getItemAsync("userUUID")
+    let userUUID = await SecureStore.getItemAsync("userUUID");
     console.log(userUUID)
     if(userUUID !== null){
       firebase.firestore().collection("Users").doc(userUUID).set({
@@ -177,25 +177,27 @@ async onRankChange(newValue){
           selectedValue={this.state.skillLevel}
           onValueChange={(itemValue) => this.onRankChange(itemValue)}
         >
-          <Picker.Item label="Iron I" value="Iron I" />
-          <Picker.Item label="Iron II" value="Iron II" />
-          <Picker.Item label="Iron III" value="Iron III" />
-          <Picker.Item label="Bronze I" value="Bronze I" />
-          <Picker.Item label="Bronze II" value="Bronze II" />
-          <Picker.Item label="Bronze III" value="Bronze III" />
-          <Picker.Item label="Silver I" value="Silver I" />
-          <Picker.Item label="Silver II" value="Silver II" />
-          <Picker.Item label="Silver III" value="Silver III" />
-          <Picker.Item label="Gold I" value="Gold I" />
-          <Picker.Item label="Gold II" value="Gold II" />
-          <Picker.Item label="Gold III" value="Gold III" />
-          <Picker.Item label="Platinum I" value="Platinum I" />
-          <Picker.Item label="Platinum II" value="Platinum II" />
-          <Picker.Item label="Platinum III" value="Platinum III" />
-          <Picker.Item label="Diamond I" value="Diamond I" />
-          <Picker.Item label="Diamond II" value="Diamond II" />
-          <Picker.Item label="Diamond III" value="Diamond III" />
-          <Picker.Item label="Immortal" value="Immortal" />
+          <Picker.Item label="Iron 1" value="Iron 1" />
+          <Picker.Item label="Iron 2" value="Iron 2" />
+          <Picker.Item label="Iron 3" value="Iron 3" />
+          <Picker.Item label="Bronze 1" value="Bronze 1" />
+          <Picker.Item label="Bronze 2" value="Bronze 2" />
+          <Picker.Item label="Bronze 3" value="Bronze 3" />
+          <Picker.Item label="Silver 1" value="Silver 1" />
+          <Picker.Item label="Silver 2" value="Silver 2" />
+          <Picker.Item label="Silver 3" value="Silver 3" />
+          <Picker.Item label="Gold 1" value="Gold 1" />
+          <Picker.Item label="Gold 2" value="Gold 2" />
+          <Picker.Item label="Gold 3" value="Gold 3" />
+          <Picker.Item label="Platinum 1" value="Platinum 1" />
+          <Picker.Item label="Platinum 2" value="Platinum 2" />
+          <Picker.Item label="Platinum 3" value="Platinum 3" />
+          <Picker.Item label="Diamond 1" value="Diamond 1" />
+          <Picker.Item label="Diamond 2" value="Diamond 2" />
+          <Picker.Item label="Diamond 3" value="Diamond 3" />
+          <Picker.Item label="Immortal 1" value="Immortal 1" />
+          <Picker.Item label="Immortal 2" value="Immortal 2" />
+          <Picker.Item label="Immortal 3" value="Immortal 3" />
           <Picker.Item label="Radiant" value="Radiant" />
 
         </Picker>
@@ -222,7 +224,6 @@ async onRankChange(newValue){
           <Picker.Item label="Sova" value="Sova" />
           <Picker.Item label="Viper" value="Viper" />
           <Picker.Item label="Yoru" value="Yoru" />
-
         </Picker>
 
       </ScrollView>
