@@ -23,9 +23,9 @@ export default class AppScreen extends Component {
 
           let iconName
 
-          if (route.name === "Match"){                            //returning correct ionicon for each page
+          if (route.name === "Swipe"){                            //returning correct ionicon for each page
             iconName = "people-circle-outline"
-          }else if (route.name === "Chat"){
+          }else if (route.name === "Matches"){
             iconName = "chatbubbles-outline"
           }else if (route.name === "Profile"){
             iconName = "person-circle-outline"
@@ -39,9 +39,9 @@ export default class AppScreen extends Component {
           backgroundColor: "black"                                              //other navbar settings
         }
       })}
-      initialRouteName = "Match">
-        <TabNavigator.Screen name="Match" component={MatchScreen}/>
-        <TabNavigator.Screen name="Chat" component={ChatScreen}/>
+      initialRouteName = "Swipe">
+        <TabNavigator.Screen name="Swipe" component={MatchScreen}/>
+        <TabNavigator.Screen name="Matches" component={ChatScreen}/>
         <TabNavigator.Screen name="Profile" component={ProfileScreen}/>
       </TabNavigator.Navigator>
     </NavigationContainer> 
