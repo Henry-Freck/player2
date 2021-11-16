@@ -41,6 +41,7 @@ function hackyListContains(list, item) {
 export default class ChatScreen extends Component {
   componentDidMount(){
     constructor()
+    this.refreshButton()
   }
 
   constructor(){
@@ -97,21 +98,9 @@ export default class ChatScreen extends Component {
     <View style={styles.container}>
         <FlatList
             data={this.state.matches}
-        //   data={[   ///fill in data here with matches
-        //   {key: 'Devin'},
-        //   {key: 'Dan'},
-        //   {key: 'Dominic'},
-        //   {key: 'Jackson'},
-        //   {key: 'James'},
-        //   {key: 'Joel'},
-        //   {key: 'John'},
-        //   {key: 'Jillian'},
-        //   {key: 'Jimmy'},
-        //   {key: 'Julie'},
-        // ]}
         renderItem={({item}) => <Text style={styles.item}>{item.key}</Text>}
       />
-      <Button title="refresh" onPress={this.refreshButton}>Refresh</Button>
+      {/*<Button title="refresh" onPress={this.refreshButton}>Refresh</Button>*/}
     </View>
     );
   }

@@ -22,6 +22,7 @@ if (firebase.apps.length == 0) {
 export default class MatchScreen extends Component {
   componentDidMount(){
     constructor()
+    this.refreshButton()
   }
 
   constructor(){
@@ -201,7 +202,7 @@ export default class MatchScreen extends Component {
 
       <Button title="Yes" onPress={this.yesButton}>Hello there</Button>
       <Button title="No" onPress={this.noButton}>Hello there</Button>
-      <Button title="refresh" onPress={this.refreshButton}>Refresh</Button>
+      {/*<Button title="refresh" onPress={this.refreshButton}>Refresh</Button>*/}
 
     </View>
     );
