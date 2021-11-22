@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, Text, Button} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, View, Text, Button, Alert} from 'react-native';
 import firebase from 'firebase'
 import * as SecureStore from "expo-secure-store"
+import { collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: "AIzaSyB8pxsOuMbDeJvX9dqzymkRROLIGZtSwAY",
@@ -16,16 +16,28 @@ const firebaseConfig = {
 
 //initialize firebase
 if (firebase.apps.length == 0) {
-  firebase.initializeApp(firebaseConfig);
+  var app = firebase.initializeApp(firebaseConfig);
 }
 
 export default class MatchScreen extends Component {
-  async yesButton(){
-    //enter the code here that runs when the yes button is pressed
+  componentDidMount(){
+    constructor()
+    this.refreshButton()
   }
 
-  async noButton(){
-    //code here that gets performed when the no button is pressed
+  constructor(){
+    super()
+    this.state = {
+      potentialMatches: [],
+      matchIds: [],
+      currentMatch: {
+        displayName: "Hit Refresh!",
+        rank: "N/A",
+        id: "null"
+      },
+      matchIndex: 0,
+      matchId: "null"
+    }
   }
 
   rankDistance(rank1, rank2){
@@ -83,25 +95,135 @@ export default class MatchScreen extends Component {
     }
   }
 
+  yesButton = async () => {
+    let userUUID = await SecureStore.getItemAsync("userUUID")
+    var otherUUID = this.state.matchIds[this.state.matchIndex]
+    console.log(otherUUID)
+    console.log(typeof(otherUUID))
+    var otherUser = await firebase.firestore().collection("Users").doc(otherUUID).get()
+    if(userUUID != null){
+      console.log(typeof(otherUser.data()))
+      if("swipedYesOn" in otherUser.data() && otherUser.data().swipedYesOn.includes(userUUID)){
+        Alert.alert("You matched with " + otherUser.data().displayName + "!\nAdd them now to start playing!")
+      }
+      let db = firebase.firestore()
+      const FieldValue = firebase.firestore.FieldValue
+      let ourDocRef = db.collection("Users").doc(userUUID)
+      let updateOurList = ourDocRef.update("swipedYesOn", FieldValue.arrayUnion(otherUUID))
+      let otherDocRef = db.collection("Users").doc(otherUUID)
+      let updateOtherList = otherDocRef.update("swipedYesOnBy", FieldValue.arrayUnion(userUUID))
+      var mInd = this.state.matchIndex + 1
+      var matches = this.state.potentialMatches
+      this.setState({
+        matchIndex: mInd,
+        currentMatch: matches[mInd]
+      })
+    }
+    else{
+      console.log("failed to retrieve userUUID")
+    }
+  }
+
+  noButton = async (otherUUID) => {
+    let userUUID = await SecureStore.getItemAsync("userUUID")
+    var otherUUID = this.state.matchIds[this.state.matchIndex]
+    if(userUUID != null){
+      let db = firebase.firestore()
+      const FieldValue = firebase.firestore.FieldValue
+      let ourDocRef = db.collection("Users").doc(userUUID)
+      let updateOurList = ourDocRef.update("swipedNoOn", FieldValue.arrayUnion(otherUUID))
+      let otherDocRef = db.collection("Users").doc(otherUUID)
+      let updateOtherList = otherDocRef.update("swipedNoOnBy", FieldValue.arrayUnion(userUUID))
+      var mInd = this.state.matchIndex + 1
+      var matches = this.state.potentialMatches
+      this.setState({
+        matchIndex: mInd,
+        currentMatch: matches[mInd]
+      })
+    }
+    else{
+      console.log("failed to retrieve userUUID")
+    }
+  }
+
+  addTestUsers = async () => {
+    for(var i = 5; i < 200; i++){
+      var docName = "TestUser" + i
+      var display = "Test User" + i + "#5555"
+      firebase.firestore().collection("Users").doc(docName).set({
+        displayName: display,
+        main: "Yoru",
+        rank: "Radiant",
+      }, {merge: true}).then( () => {
+        console.log("Added new test user with display name " + display + " to the database")
+      })
+    }
+  }
+
+  refreshButton = async () => {
+    //get users collection
+    let userUUID = await SecureStore.getItemAsync("userUUID")
+    const snapshot = await firebase.firestore().collection("Users").get()
+    var matches = []
+    var ids = []
+    var myRank = "none"
+    snapshot.forEach((doc) => {
+      if(doc.id !== userUUID){
+        //check if we've swiped on this person before, if not they're a potential match
+        if( ("swipedNoOn" in doc.data() && !(userUUID in doc.data().swipedNoOn)) ||
+            ("swipedNoOnBy" in doc.data() && !(userUUID in doc.data().swipedNoOnBy)) ||
+            // ("swipedYesOn" in doc.data() && !(userUUID in doc.data().swipedYesOn)) ||
+            ("swipedYesOnBy" in doc.data() && !(userUUID in doc.data().swipedYesOnBy))){
+          //do nothing here, it was easier to put the logic in the else than try to negate this hideous conditional
+        }
+        else{
+          matches.push(doc.data())
+          ids.push(doc.id)
+        }
+      }
+      else{
+        myRank = doc.data().rank
+        // console.log(myRank)
+      }
+      // console.log(doc.data())
+    })
+    // matches.sort((match) => {
+    //   rank = match.rank
+    //   console.log(match)
+    //   console.log(typeof(rank))
+    //   console.log(typeof(myRank))
+    //   // try{
+    //     var rankDist = this.rankDistance(myRank, rank)
+    //   // }catch(e){
+    //     // console.log(e)
+    //   // }
+    //   return rankDist
+    // })
+    // matches.forEach((match) => {
+    //   console.log("found match")
+    //   console.log(match)
+    //   console.log(match.rank)
+    // })
+    var id = matches[0].id
+    this.setState({
+      potentialMatches: matches,
+      matchIndex: 0,
+      currentMatch: matches[0],
+      matchIds: ids,
+      matchId: ids[0] 
+    })
+  }
 
   render(){
     return(
     <View style={styles.container}>
-      <View style={styles.playerInfo}>
-        <Text style={{color:"white",fontSize:30}}>The Player Name Will Go Here!</Text>
-        <Text style={{color:"white",fontSize:30}}>Rank</Text>
-        <Text style={{color:"white",fontSize:30}}>The player role will go here</Text>
-      </View>
+      <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.displayName}</Text>
+      <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.rank}</Text>
+      {/* <Text style={{color:"white",fontSize:30}}>The Player Name Will Go Here!</Text> */}
 
-      <View style={styles.buttons}>
-        <TouchableOpacity style = {styles.noButton} onPress = {this.noButton}>
-          <Text sytle = {styles.noText}>NO</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style = {styles.noButton} onPress = {this.yesButton}>
-          <Text sytle = {styles.noText}>YES</Text>
-        </TouchableOpacity>
-      </View>
+      <Button title="Yes" onPress={this.yesButton}>Hello there</Button>
+      <Button title="No" onPress={this.noButton}>Hello there</Button>
+      {/*<Button title="add test users" onPress={this.addTestUsers}>Add Test Users</Button>*/}
 
     </View>
     );
@@ -112,29 +234,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  playerInfo: {
-    flex:1,
-    flexDirection: "column",
-    justifyContent: "space-evenly",
-    alignItems: 'center'
-  },
-  buttons: {
-    flexDirection: "row",
-    justifyContent: 'space-evenly',
-    
-
-  },
-  noButton: {
-    backgroundColor: "white",
-    padding: 20,
-    paddingRight: 60,
-    paddingLeft: 60
-  
-
-
-  },
-  noText: {
-
-  }
 });

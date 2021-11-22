@@ -55,10 +55,40 @@ export default class ProfileScreen extends Component {
     super()
     this.state = {
       //selectedItems is the list of games that have been selected
-      selectedItems: [],
+      // selectedItems: [],
       skillLevel: "Iron I",
-      mainCharacter: "Astra"
+      mainCharacter: "Astra",
+      displayName: ""
     }
+  }
+
+  componentDidMount() {
+    this.populateFieldsFromDB()
+  }
+
+  populateFieldsFromDB = async () => {
+    let userUUID = await SecureStore.getItemAsync("userUUID")
+    var displayName = ""
+    var rank = ""
+    var main = ""
+    if(userUUID != null){
+      const user = await firebase.firestore().collection("Users").doc(userUUID).get()
+      if("displayName" in user.data()){
+        displayName = user.data().displayName
+      }
+      if("rank" in user.data()){
+        rank = user.data().rank
+      }
+      if("main" in user.data()){
+        main = user.data().main
+      }
+    }
+
+    this.setState({
+      skillLevel: rank,
+      mainCharacter: main,
+      displayName: displayName,
+    })
   }
 
   
@@ -73,8 +103,7 @@ export default class ProfileScreen extends Component {
 
   //helper function to be called by the TextInput field for setting display name
   async onDisplayNameChange(newValue){
-    //TODO: Make this access the correct user based on username and insert the document if it is not present
-    let userUUID = await SecureStore.getItemAsync("userUUID");
+    let userUUID = await SecureStore.getItemAsync("userUUID")
     console.log(userUUID)
     if(userUUID !== null){
       firebase.firestore().collection("Users").doc(userUUID).set({
@@ -97,7 +126,6 @@ export default class ProfileScreen extends Component {
   //helper function to be called by the TextInput field for setting your in game rank
 async onRankChange(newValue){
     this.setState({skillLevel: newValue})
-    //TODO: Make this access the correct user based on username and insert the document if it is not present
     let userUUID = await SecureStore.getItemAsync("userUUID");
     console.log(userUUID)
     if(userUUID !== null){
@@ -151,6 +179,7 @@ async onRankChange(newValue){
           /*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/
           style={styles.textField}
           onChangeText={text => this.onDisplayNameChange(text)}
+          defaultValue={this.state.displayName}
           //TODO: prefill this field if the user has it set in their firestore document
           placeholder='Enter your Riot Name and discriminator (i.e. John#1234)'
         />
