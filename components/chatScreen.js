@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Text, FlatList, Button} from 'react-native';
+import {StyleSheet, View, Text, FlatList, TouchableOpacity} from 'react-native';
 import firebase from 'firebase'
 import * as SecureStore from "expo-secure-store"
 import { collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
@@ -98,7 +98,7 @@ export default class ChatScreen extends Component {
     <View style={styles.container}>
         <FlatList
             data={this.state.matches}
-        renderItem={({item}) => <Text style={styles.item}>{item.key}</Text>}
+        renderItem={({item}) => <TouchableOpacity style = {styles.button}><Text style={styles.Text}>{item.key}</Text></TouchableOpacity>}
       />
       {/*<Button title="refresh" onPress={this.refreshButton}>Refresh</Button>*/}
     </View>
@@ -110,10 +110,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-  },
-  item:{
-    color: 'white',
-    fontSize: 40,
     paddingTop: "5%"
+  },
+  Text:{
+    color: '#c7c7c7',
+    fontSize: 35,
+    marginLeft: "3%"
+  },
+  button:{
+    backgroundColor:"green",
+    marginVertical: "3%",
+    paddingVertical: "2%"
   }
 });
