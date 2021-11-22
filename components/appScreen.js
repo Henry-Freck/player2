@@ -23,9 +23,9 @@ export default class AppScreen extends Component {
 
           let iconName
 
-          if (route.name === "Swipe"){                            //returning correct ionicon for each page
+          if (route.name === "Match"){                            //returning correct ionicon for each page
             iconName = "people-circle-outline"
-          }else if (route.name === "Matches"){
+          }else if (route.name === "Chat"){
             iconName = "chatbubbles-outline"
           }else if (route.name === "Profile"){
             iconName = "person-circle-outline"
@@ -34,14 +34,19 @@ export default class AppScreen extends Component {
           return <Ionicons name={iconName} size={size} color={color} />           //adding icons  to navbar
 
         },
-        tabBarActiveTintColor: "chartreuse", 
+        headerShown: true,
+        headerTitle: "Player2",
+        headerStyle:styles.headerStyle,
+        tabBarActiveTintColor: "green", 
+        tabBarInactiveTintColor: "grey",
+        headerTintColor: "green",
         tabBarStyle: {
           backgroundColor: "black"                                              //other navbar settings
-        }
+        },
       })}
       initialRouteName = "Swipe">
-        <TabNavigator.Screen name="Swipe" component={MatchScreen}/>
-        <TabNavigator.Screen name="Matches" component={ChatScreen}/>
+        <TabNavigator.Screen name="Match" component={MatchScreen}/>
+        <TabNavigator.Screen name="Chat" component={ChatScreen}/>
         <TabNavigator.Screen name="Profile" component={ProfileScreen}/>
       </TabNavigator.Navigator>
     </NavigationContainer> 
@@ -53,7 +58,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-    alignItems: 'center',
-    justifyContent: 'center',
+
+    
   },
+  headerStyle:{
+    backgroundColor: "black",
+  }
 });

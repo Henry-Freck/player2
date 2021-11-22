@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, Text, Button, Alert} from 'react-native';
+import { StyleSheet, View, Text, Button, Alert,TouchableOpacity} from 'react-native';
 import firebase from 'firebase'
 import * as SecureStore from "expo-secure-store"
 import { collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
+import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants'
 
 const firebaseConfig = {
   apiKey: "AIzaSyB8pxsOuMbDeJvX9dqzymkRROLIGZtSwAY",
@@ -31,8 +33,8 @@ export default class MatchScreen extends Component {
       potentialMatches: [],
       matchIds: [],
       currentMatch: {
-        displayName: "Hit Refresh!",
-        rank: "N/A",
+        displayName: "Loading",
+        rank: "",
         id: "null"
       },
       matchIndex: 0,
@@ -217,14 +219,23 @@ export default class MatchScreen extends Component {
   render(){
     return(
     <View style={styles.container}>
-      <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.displayName}</Text>
-      <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.rank}</Text>
-      {/* <Text style={{color:"white",fontSize:30}}>The Player Name Will Go Here!</Text> */}
-
-      <Button title="Yes" onPress={this.yesButton}>Hello there</Button>
-      <Button title="No" onPress={this.noButton}>Hello there</Button>
-      {/*<Button title="add test users" onPress={this.addTestUsers}>Add Test Users</Button>*/}
-
+      <View style = {styles.info}>
+        <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.displayName}</Text>
+        <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.rank}</Text>
+        <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.main}</Text>
+      </View>
+      <View style = {styles.buttonsView}>
+        <TouchableOpacity style = {styles.button} onPress = {this.noButton}>
+          <Ionicons name="thumbs-down" style={styles.buttonContent}/>
+          {/* <Text style={styles.buttonContent}>NO</Text> */}
+        </TouchableOpacity>
+        <View style = {styles.space}/>
+        <TouchableOpacity style = {styles.button} onPress = {this.yesButton}>
+          {/* <Text style={styles.buttonContent}>YES</Text> */}
+          <Ionicons name="thumbs-up" style={styles.buttonContent} />
+        </TouchableOpacity>
+        {/*<Button title="refresh" onPress={this.refreshButton}>Refresh</Button>*/}
+      </View>
     </View>
     );
   }
@@ -233,8 +244,43 @@ export default class MatchScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor:'black',
+    justifyContent: "center",
+    alignItems:"center"
   },
+  buttonsView: {
+    position:"absolute",
+    alignItems: "center",
+    justifyContent: 'center',
+    flexDirection: 'row',
+    bottom: "7%",
+    
+  },
+  button:{
+    backgroundColor: "green",
+    borderRadius: 50,
+    borderWidth:0,
+    padding:10,
+    margin:2,
+    width:"45%"
+
+  },
+  info: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: 'center',
+    paddingBottom: "30%"
+  },
+  space:{
+    width: "4%"
+  },
+  buttonContent:{
+    margin: 20,
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 25
+  }
+  
+
 });

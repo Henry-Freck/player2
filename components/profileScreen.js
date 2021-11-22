@@ -174,7 +174,7 @@ async onRankChange(newValue){
     return(
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <Text style={styles.fieldHeaders}>Riot Name</Text>
+        <Text style={styles.textInputHeaders}>Riot Name</Text>
         <TextInput 
           /*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/
           style={styles.textField}
@@ -198,11 +198,12 @@ async onRankChange(newValue){
           hideSearch={true}
           single={true}
         /> */}
-        <Text style={styles.fieldHeaders}>Current Rank</Text>
+        <Text style={styles.pickerHeaders}>Current Rank</Text>
 
         {/*TODO: add more profile information entry fields (probably some sort of check list for what games, along with a text entry for gamertag, rank, etc. for each game)*/}
 
         <Picker
+          itemStyle = {styles.pickerItems}
           selectedValue={this.state.skillLevel}
           onValueChange={(itemValue) => this.onRankChange(itemValue)}
         >
@@ -231,9 +232,10 @@ async onRankChange(newValue){
 
         </Picker>
 
-        <Text style={styles.fieldHeaders}>Current Main</Text>
+        <Text style={styles.pickerHeaders}>Current Main</Text>
 
         <Picker
+          itemStyle = {styles.pickerItems}  
           selectedValue={this.state.mainCharacter}
           onValueChange={(itemValue) => this.onMainChange(itemValue)}
         >
@@ -265,11 +267,13 @@ async onRankChange(newValue){
 
 const styles = StyleSheet.create({
   //Style for the headers on each of the profile information entry fields
-  fieldHeaders: {
+  pickerHeaders: {
     color: '#555555',
     justifyContent: 'space-between',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center', 
+    paddingHorizontal: "3%",
+    fontSize: 18
   },
   //Style for the scroll view that will contain all the information entry fields
   scrollView: {
@@ -286,13 +290,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     borderColor: '#555555',
-    width: '100%',
+    width: '95%',
+    marginBottom: "7%",
+    alignSelf: "center"
   },
   //style for the View that holds the ScrollView, not even sure if we need this anymore but I don't want to break anything
   container: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingTop: "5%"
+  },
+  pickerItems:{
+    color: "white"
+  },
+  textInputHeaders: {
+    color: '#555555',
+    justifyContent: 'space-between',
+    flexDirection: 'column',
+    alignItems: 'center', 
+    paddingHorizontal: "3%",
+    fontSize: 18,
+    marginBottom: "3%"
   },
 });
