@@ -25,15 +25,6 @@ function hackyListContains(list, item) {
     if(i === item){
       returned = true
     }
-    // var valid = true
-    // for(var n = 0; n < i.length; n++){
-    //   if(i.charCodeAt(n) != item.charCodeAt(n)){
-    //     valid = false
-    //   }
-    // }
-    // if(valid){
-    //   returned = true
-    // }
   })
   return returned
 }
@@ -54,8 +45,8 @@ export default class ChatScreen extends Component {
   refreshButton = async () => {
     //get users collection
     let userUUID = await SecureStore.getItemAsync("userUUID")
-    const user = await firebase.firestore().collection("Users").doc(userUUID).get()
     if(userUUID !== null){
+      const user = await firebase.firestore().collection("Users").doc(userUUID).get()
       if("swipedYesOn" in user.data() && "swipedYesOnBy" in user.data()){
         const yesOn = user.data().swipedYesOn;
         const yesOnBy = user.data().swipedYesOnBy;

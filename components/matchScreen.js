@@ -148,18 +148,40 @@ export default class MatchScreen extends Component {
     }
   }
 
+  addTestUsers = async () => {
+    for(var i = 5; i < 200; i++){
+      var docName = "TestUser" + i
+      var display = "Test User" + i + "#5555"
+      firebase.firestore().collection("Users").doc(docName).set({
+        displayName: display,
+        main: "Yoru",
+        rank: "Radiant",
+      }, {merge: true}).then( () => {
+        console.log("Added new test user with display name " + display + " to the database")
+      })
+    }
+  }
+
   refreshButton = async () => {
     //get users collection
     let userUUID = await SecureStore.getItemAsync("userUUID")
     const snapshot = await firebase.firestore().collection("Users").get()
-    //map on distance in rank, probably need rank comparison function
     var matches = []
     var ids = []
     var myRank = "none"
     snapshot.forEach((doc) => {
       if(doc.id !== userUUID){
-        matches.push(doc.data())
-        ids.push(doc.id)
+        //check if we've swiped on this person before, if not they're a potential match
+        if( ("swipedNoOn" in doc.data() && !(userUUID in doc.data().swipedNoOn)) ||
+            ("swipedNoOnBy" in doc.data() && !(userUUID in doc.data().swipedNoOnBy)) ||
+            // ("swipedYesOn" in doc.data() && !(userUUID in doc.data().swipedYesOn)) ||
+            ("swipedYesOnBy" in doc.data() && !(userUUID in doc.data().swipedYesOnBy))){
+          //do nothing here, it was easier to put the logic in the else than try to negate this hideous conditional
+        }
+        else{
+          matches.push(doc.data())
+          ids.push(doc.id)
+        }
       }
       else{
         myRank = doc.data().rank
@@ -193,7 +215,6 @@ export default class MatchScreen extends Component {
       matchId: ids[0] 
     })
   }
-
 
   render(){
     return(
