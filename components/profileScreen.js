@@ -58,7 +58,8 @@ export default class ProfileScreen extends Component {
       // selectedItems: [],
       skillLevel: "Iron I",
       mainCharacter: "Astra",
-      displayName: ""
+      displayName: "",
+      youtubeLink: "",
     }
   }
 
@@ -71,6 +72,7 @@ export default class ProfileScreen extends Component {
     var displayName = ""
     var rank = ""
     var main = ""
+    var youtubeLink = ""
     if(userUUID != null){
       const user = await firebase.firestore().collection("Users").doc(userUUID).get()
       if("displayName" in user.data()){
@@ -82,12 +84,16 @@ export default class ProfileScreen extends Component {
       if("main" in user.data()){
         main = user.data().main
       }
+      if("youtubeLink" in user.data()){
+        youtubeLink = user.data().youtubeLink
+      }
     }
 
     this.setState({
       skillLevel: rank,
       mainCharacter: main,
       displayName: displayName,
+      youtubeLink: youtubeLink,
     })
   }
 
@@ -124,7 +130,7 @@ export default class ProfileScreen extends Component {
   }
 
   //helper function to be called by the TextInput field for setting your in game rank
-async onRankChange(newValue){
+  async onRankChange(newValue){
     this.setState({skillLevel: newValue})
     let userUUID = await SecureStore.getItemAsync("userUUID");
     console.log(userUUID)
@@ -169,13 +175,29 @@ async onRankChange(newValue){
     // })
   }
 
+  async onYoutubeLinkChange(newValue){
+    this.setState({youtubeLink: newValue})
+    let userUUID = await SecureStore.getItemAsync("userUUID");
+    if(userUUID !== null){
+      firebase.firestore().collection("Users").doc(userUUID).set({
+        youtubeLink: newValue,
+      }, {merge: true})
+          .then( () => {
+            console.log("set new youtube link")
+          })
+    }
+    else{
+      console.log("userUUID retrieval failed")
+    }
+  }
+
 
   render(){
     return(
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <Text style={styles.textInputHeaders}>Riot Name</Text>
-        <TextInput 
+        <TextInput
           /*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/
           style={styles.textField}
           onChangeText={text => this.onDisplayNameChange(text)}
@@ -256,6 +278,15 @@ async onRankChange(newValue){
           <Picker.Item label="Viper" value="Viper" />
           <Picker.Item label="Yoru" value="Yoru" />
         </Picker>
+
+        <Text style={styles.pickerHeaders}>Youtube link for highlights</Text>
+        <TextInput
+            style={styles.textField}
+            onChangeText={text => this.onYoutubeLinkChange(text)}
+            defaultValue={this.state.youtubeLink}
+            placeholder='Enter your Riot Name and discriminator (i.e. John#1234)'
+        />
+
 
       </ScrollView>
     </View>
