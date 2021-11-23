@@ -292,7 +292,8 @@ const styles = StyleSheet.create({
     borderColor: '#555555',
     width: '95%',
     marginBottom: "7%",
-    alignSelf: "center"
+    alignSelf: "center",
+    color: "#FFFFFF"
   },
   //style for the View that holds the ScrollView, not even sure if we need this anymore but I don't want to break anything
   container: {
@@ -303,7 +304,7 @@ const styles = StyleSheet.create({
     paddingTop: "5%"
   },
   pickerItems:{
-    color: "white"
+    color: "#FFFFFF"
   },
   textInputHeaders: {
     color: '#555555',

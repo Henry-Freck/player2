@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 25
+    // fontSize: 25
   }
   
 
