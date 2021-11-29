@@ -1,12 +1,11 @@
 import React, {Component, useState}from 'react';
-import { StyleSheet, View, Text, TextInput, Alert} from 'react-native';
+import { StyleSheet, View, Text, TextInput, Alert, TouchableOpacity, Button, Image, StatusBar, ActivityIndicator, Share, LogBox} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import SectionedMultiSelect from 'react-native-sectioned-multi-select';
-import Icon from 'react-native-vector-icons/MaterialIcons'
 import firebase from 'firebase'
-import { collection, addDoc } from "firebase/firestore"
 import {Picker} from '@react-native-picker/picker';
 import * as SecureStore from "expo-secure-store"
+import * as ImagePicker from "expo-image-picker";
+import { getApps, initializeApp } from "firebase/app";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB8pxsOuMbDeJvX9dqzymkRROLIGZtSwAY",
@@ -50,6 +49,8 @@ const gameListOptions = [
   }
 ]
 
+const pickerColor = "green"
+
 export default class ProfileScreen extends Component {
   constructor(){
     super()
@@ -59,12 +60,21 @@ export default class ProfileScreen extends Component {
       skillLevel: "Iron I",
       mainCharacter: "Astra",
       displayName: "",
-      youtubeLink: "",
+      image: null,
+      uploading: false,
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.populateFieldsFromDB()
+    if (Platform.OS !== "web") {
+      const {
+        status,
+      } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        alert("Sorry, we need camera roll permissions to make this work!");
+      }
+    }
   }
 
   populateFieldsFromDB = async () => {
@@ -72,7 +82,6 @@ export default class ProfileScreen extends Component {
     var displayName = ""
     var rank = ""
     var main = ""
-    var youtubeLink = ""
     if(userUUID != null){
       const user = await firebase.firestore().collection("Users").doc(userUUID).get()
       if("displayName" in user.data()){
@@ -84,16 +93,12 @@ export default class ProfileScreen extends Component {
       if("main" in user.data()){
         main = user.data().main
       }
-      if("youtubeLink" in user.data()){
-        youtubeLink = user.data().youtubeLink
-      }
     }
 
     this.setState({
       skillLevel: rank,
       mainCharacter: main,
       displayName: displayName,
-      youtubeLink: youtubeLink,
     })
   }
 
@@ -175,24 +180,35 @@ export default class ProfileScreen extends Component {
     // })
   }
 
-  async onYoutubeLinkChange(newValue){
-    this.setState({youtubeLink: newValue})
-    let userUUID = await SecureStore.getItemAsync("userUUID");
-    if(userUUID !== null){
+  onChooseImagePress = async() =>{
+    let userUUID = await SecureStore.getItemAsync("userUUID")
+    let result = await ImagePicker.launchImageLibraryAsync()
+    console.log("launched image picker")
+    if(!result.cancelled){
+      console.log("result not cancelled")
+      this.uploadImage(result.uri, userUUID)
+      console.log("put")
       firebase.firestore().collection("Users").doc(userUUID).set({
-        youtubeLink: newValue,
+        imageTag: userUUID,
       }, {merge: true})
-          .then( () => {
-            console.log("set new youtube link")
-          })
-    }
-    else{
-      console.log("userUUID retrieval failed")
     }
   }
 
+  uploadImage = async(uri, imageName) => {
+    const response = await fetch(uri)
+    console.log("fetched")
+    const blob = await response.blob();
+    console.log("blobbed")
+
+    var ref = firebase.storage().ref().child("images/"+imageName)
+    console.log("ref made")
+    return ref.put(blob)
+    
+
+  }
 
   render(){
+    let {image} = [this.state.image, this.state.uploading]
     return(
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -204,6 +220,9 @@ export default class ProfileScreen extends Component {
           defaultValue={this.state.displayName}
           //TODO: prefill this field if the user has it set in their firestore document
           placeholder='Enter your Riot Name and discriminator (i.e. John#1234)'
+          keyboardAppearance="dark"
+          placeholderTextColor="#004f00"
+          selectionColor="green"
         />
         {/* <Text style={styles.fieldHeaders}>Current Game</Text>
         <SectionedMultiSelect
@@ -229,28 +248,28 @@ export default class ProfileScreen extends Component {
           selectedValue={this.state.skillLevel}
           onValueChange={(itemValue) => this.onRankChange(itemValue)}
         >
-          <Picker.Item label="Iron 1" value="Iron 1" />
-          <Picker.Item label="Iron 2" value="Iron 2" />
-          <Picker.Item label="Iron 3" value="Iron 3" />
-          <Picker.Item label="Bronze 1" value="Bronze 1" />
-          <Picker.Item label="Bronze 2" value="Bronze 2" />
-          <Picker.Item label="Bronze 3" value="Bronze 3" />
-          <Picker.Item label="Silver 1" value="Silver 1" />
-          <Picker.Item label="Silver 2" value="Silver 2" />
-          <Picker.Item label="Silver 3" value="Silver 3" />
-          <Picker.Item label="Gold 1" value="Gold 1" />
-          <Picker.Item label="Gold 2" value="Gold 2" />
-          <Picker.Item label="Gold 3" value="Gold 3" />
-          <Picker.Item label="Platinum 1" value="Platinum 1" />
-          <Picker.Item label="Platinum 2" value="Platinum 2" />
-          <Picker.Item label="Platinum 3" value="Platinum 3" />
-          <Picker.Item label="Diamond 1" value="Diamond 1" />
-          <Picker.Item label="Diamond 2" value="Diamond 2" />
-          <Picker.Item label="Diamond 3" value="Diamond 3" />
-          <Picker.Item label="Immortal 1" value="Immortal 1" />
-          <Picker.Item label="Immortal 2" value="Immortal 2" />
-          <Picker.Item label="Immortal 3" value="Immortal 3" />
-          <Picker.Item label="Radiant" value="Radiant" />
+          <Picker.Item label="Iron 1" value="Iron 1" color = {pickerColor} />
+          <Picker.Item label="Iron 2" value="Iron 2" color = {pickerColor} />
+          <Picker.Item label="Iron 3" value="Iron 3" color = {pickerColor}/>
+          <Picker.Item label="Bronze 1" value="Bronze 1" color = {pickerColor}/>
+          <Picker.Item label="Bronze 2" value="Bronze 2" color = {pickerColor}/>
+          <Picker.Item label="Bronze 3" value="Bronze 3" color = {pickerColor}/>
+          <Picker.Item label="Silver 1" value="Silver 1" color = {pickerColor}/>
+          <Picker.Item label="Silver 2" value="Silver 2" color = {pickerColor}/>
+          <Picker.Item label="Silver 3" value="Silver 3" color = {pickerColor}/>
+          <Picker.Item label="Gold 1" value="Gold 1" color = {pickerColor}/>
+          <Picker.Item label="Gold 2" value="Gold 2" color = {pickerColor}/>
+          <Picker.Item label="Gold 3" value="Gold 3" color = {pickerColor}/>
+          <Picker.Item label="Platinum 1" value="Platinum 1" color = {pickerColor}/>
+          <Picker.Item label="Platinum 2" value="Platinum 2" color = {pickerColor}/>
+          <Picker.Item label="Platinum 3" value="Platinum 3" color = {pickerColor}/>
+          <Picker.Item label="Diamond 1" value="Diamond 1" color = {pickerColor}/>
+          <Picker.Item label="Diamond 2" value="Diamond 2" color = {pickerColor}/>
+          <Picker.Item label="Diamond 3" value="Diamond 3" color = {pickerColor}/>
+          <Picker.Item label="Immortal 1" value="Immortal 1" color = {pickerColor}/>
+          <Picker.Item label="Immortal 2" value="Immortal 2" color = {pickerColor}/>
+          <Picker.Item label="Immortal 3" value="Immortal 3" color = {pickerColor}/>
+          <Picker.Item label="Radiant" value="Radiant" color = {pickerColor}/>
 
         </Picker>
 
@@ -261,32 +280,25 @@ export default class ProfileScreen extends Component {
           selectedValue={this.state.mainCharacter}
           onValueChange={(itemValue) => this.onMainChange(itemValue)}
         >
-          <Picker.Item label="Astra" value="Astra" />
-          <Picker.Item label="Breach" value="Breach" />
-          <Picker.Item label="Brimstone" value="Brimstone" />
-          <Picker.Item label="Cypher" value="Cypher" />
-          <Picker.Item label="Jett" value="Jett" />
-          <Picker.Item label="KAY/O" value="KAY/O" />
-          <Picker.Item label="Killjoy" value="Killjoy" />
-          <Picker.Item label="Omen" value="Omen" />
-          <Picker.Item label="Pheonix" value="Pheonix" />
-          <Picker.Item label="Raze" value="Raze" />
-          <Picker.Item label="Reyna" value="Reyna" />
-          <Picker.Item label="Sage" value="Sage" />
-          <Picker.Item label="Skye" value="Skye" />
-          <Picker.Item label="Sova" value="Sova" />
-          <Picker.Item label="Viper" value="Viper" />
-          <Picker.Item label="Yoru" value="Yoru" />
+          <Picker.Item label="Astra" value="Astra" color = {pickerColor}/>
+          <Picker.Item label="Breach" value="Breach" color = {pickerColor}/>
+          <Picker.Item label="Brimstone" value="Brimstone" color = {pickerColor}/>
+          <Picker.Item label="Cypher" value="Cypher" color = {pickerColor}/>
+          <Picker.Item label="Jett" value="Jett" color = {pickerColor}/>
+          <Picker.Item label="KAY/O" value="KAY/O" color = {pickerColor}/>
+          <Picker.Item label="Killjoy" value="Killjoy" color = {pickerColor}/>
+          <Picker.Item label="Omen" value="Omen" color = {pickerColor}/>
+          <Picker.Item label="Pheonix" value="Pheonix" color = {pickerColor}/>
+          <Picker.Item label="Raze" value="Raze" color = {pickerColor}/>
+          <Picker.Item label="Reyna" value="Reyna" color = {pickerColor}/>
+          <Picker.Item label="Sage" value="Sage" color = {pickerColor}/>
+          <Picker.Item label="Skye" value="Skye" color = {pickerColor}/>
+          <Picker.Item label="Sova" value="Sova" color = {pickerColor}/>
+          <Picker.Item label="Viper" value="Viper" color = {pickerColor}/>
+          <Picker.Item label="Yoru" value="Yoru" color = {pickerColor}/>
         </Picker>
-
-        <Text style={styles.pickerHeaders}>Youtube link for highlights</Text>
-        <TextInput
-            style={styles.textField}
-            onChangeText={text => this.onYoutubeLinkChange(text)}
-            defaultValue={this.state.youtubeLink}
-            placeholder='Enter your Riot Name and discriminator (i.e. John#1234)'
-        />
-
+        
+        <Button title="choose image" onPress = {this.onChooseImagePress} />
 
       </ScrollView>
     </View>
@@ -324,7 +336,7 @@ const styles = StyleSheet.create({
     width: '95%',
     marginBottom: "7%",
     alignSelf: "center",
-    color: "#FFFFFF"
+    color: "green"
   },
   //style for the View that holds the ScrollView, not even sure if we need this anymore but I don't want to break anything
   container: {

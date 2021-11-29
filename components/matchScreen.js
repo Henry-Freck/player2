@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, Text, Button, Alert,TouchableOpacity} from 'react-native';
+import { StyleSheet, View, Text, Button, Alert,TouchableOpacity, Image} from 'react-native';
 import firebase from 'firebase'
 import * as SecureStore from "expo-secure-store"
 import { collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants'
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyB8pxsOuMbDeJvX9dqzymkRROLIGZtSwAY",
@@ -38,7 +41,8 @@ export default class MatchScreen extends Component {
         id: "null"
       },
       matchIndex: 0,
-      matchId: "null"
+      matchId: "null",
+      imageUrl: "https://firebasestorage.googleapis.com/v0/b/player2-5b498.appspot.com/o/images%2Ftest-image?alt=media&token=bf60b066-5000-4e8a-bfb7-a187bdbd873e"
     }
   }
 
@@ -116,9 +120,27 @@ export default class MatchScreen extends Component {
       let updateOtherList = otherDocRef.update("swipedYesOnBy", FieldValue.arrayUnion(userUUID))
       var mInd = this.state.matchIndex + 1
       var matches = this.state.potentialMatches
+
+      var imagePostfix;
+    if (matches[0].imageTag != null){
+      imagePostfix = matches[0].imageTag
+    }else{
+      imagePostfix = "test-image"
+    }
+
+    let imageRef = firebase.storage().ref('/images/' + imagePostfix);
+    imageRef
+      .getDownloadURL()
+      .then((url) => {
+        //from url you can fetched the uploaded image easily
+        this.setState({imageUrl: url});
+      })
+      .catch((e) => console.log('getting downloadURL of image error => ', e));
+
       this.setState({
         matchIndex: mInd,
         currentMatch: matches[mInd]
+
       })
     }
     else{
@@ -138,6 +160,23 @@ export default class MatchScreen extends Component {
       let updateOtherList = otherDocRef.update("swipedNoOnBy", FieldValue.arrayUnion(userUUID))
       var mInd = this.state.matchIndex + 1
       var matches = this.state.potentialMatches
+
+      var imagePostfix;
+    if (matches[0].imageTag != null){
+      imagePostfix = matches[0].imageTag
+    }else{
+      imagePostfix = "test-image"
+    }
+
+    let imageRef = firebase.storage().ref('/images/' + imagePostfix);
+    imageRef
+      .getDownloadURL()
+      .then((url) => {
+        //from url you can fetched the uploaded image easily
+        this.setState({imageUrl: url});
+      })
+      .catch((e) => console.log('getting downloadURL of image error => ', e));
+
       this.setState({
         matchIndex: mInd,
         currentMatch: matches[mInd]
@@ -207,22 +246,44 @@ export default class MatchScreen extends Component {
     //   console.log(match.rank)
     // })
     var id = matches[0].id
+    var imagePostfix;
+    if (matches[0].imageTag != null){
+      imagePostfix = matches[0].imageTag
+    }else{
+      imagePostfix = "test-image"
+    }
+
+    let imageRef = firebase.storage().ref('/images/' + imagePostfix);
+    imageRef
+      .getDownloadURL()
+      .then((url) => {
+        //from url you can fetched the uploaded image easily
+        this.setState({imageUrl: url});
+      })
+      .catch((e) => console.log('getting downloadURL of image error => ', e));
+
     this.setState({
       potentialMatches: matches,
       matchIndex: 0,
       currentMatch: matches[0],
       matchIds: ids,
-      matchId: ids[0] 
+      matchId: ids[0], 
     })
   }
 
   render(){
+    console.log(this.state.imageUrl)
     return(
     <View style={styles.container}>
       <View style = {styles.info}>
         <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.displayName}</Text>
-        <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.rank}</Text>
-        <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.main}</Text>
+
+
+        <Image style = {styles.Image} source = {{uri: this.state.imageUrl}}></Image>
+
+        <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.rank} | {this.state.currentMatch.main}</Text>
+        {/* <Text style={{color:"white",fontSize:30}}>{this.state.currentMatch.main}</Text> */}
+        
       </View>
       <View style = {styles.buttonsView}>
         <TouchableOpacity style = {styles.button} onPress = {this.noButton}>
@@ -280,6 +341,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     // fontSize: 25
+  },
+  Image:{
+    width: 400,
+    height: 350,
+    marginVertical: "7%"
   }
   
 

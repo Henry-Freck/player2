@@ -9,14 +9,19 @@
   },
   "dependencies": {
     "@firebase/app-compat": "^0.1.5",
+    "@google-cloud/storage": "^5.16.0",
     "@react-native-community/masked-view": "0.1.10",
+    "@react-native-firebase/storage": "^13.0.1",
     "@react-native-picker/picker": "2.1.0",
     "@react-navigation/bottom-tabs": "^6.0.9",
     "@react-navigation/elements": "^1.2.1",
     "@react-navigation/native": "^6.0.6",
     "@react-navigation/stack": "^6.0.11",
     "expo": "~42.0.1",
+    "expo-clipboard": "~1.1.0",
     "expo-facebook": "^11.3.1",
+    "expo-image-picker": "~10.2.2",
+    "expo-permissions": "~12.1.1",
     "expo-secure-store": "^10.2.0",
     "expo-status-bar": "~1.0.4",
     "firebase": "8.2.3",
@@ -26,13 +31,16 @@
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
     "react-native-gesture-handler": "~1.10.2",
+    "react-native-image-picker": "^4.3.0",
+    "react-native-image-resizer": "^1.4.5",
     "react-native-reanimated": "~2.2.0",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.4.0",
     "react-native-sectioned-multi-select": "^0.8.1",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "^0.17.5",
-    "react-navigation": "^4.4.4"
+    "react-navigation": "^4.4.4",
+    "undefined": "react-native-firebase/storage"
   },
   "devDependencies": {
     "@babel/core": "^7.15.8"
