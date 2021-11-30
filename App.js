@@ -41,6 +41,7 @@ export default class App extends Component {
       );
     }
     if(this.state.token === null){
+      console.log("youre big chillin")
       return(
 
         <View style = {styles.container}>
@@ -78,7 +79,9 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: 'white',
+    justifyContent: "center",
+    alignContent: "center"
     
   },
 });

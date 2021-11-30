@@ -48,8 +48,10 @@ export default class ChatScreen extends Component {
     if(userUUID !== null){
       const user = await firebase.firestore().collection("Users").doc(userUUID).get()
       if("swipedYesOn" in user.data() && "swipedYesOnBy" in user.data()){
+        console.log("youre good")
         const yesOn = user.data().swipedYesOn;
         const yesOnBy = user.data().swipedYesOnBy;
+        console.log(yesOn)
         var matchList = []
         yesOnBy.forEach(m => {
           console.log(m)
@@ -74,8 +76,7 @@ export default class ChatScreen extends Component {
           var displayText = otherUser.data().displayName + " | " + otherUser.data().rank
           console.log(displayText)
           readableMatchList.push({key: displayText})
-        }
-
+        } 
       }
 
       this.setState({
@@ -105,12 +106,14 @@ const styles = StyleSheet.create({
   },
   Text:{
     color: '#c7c7c7',
-    fontSize: 35,
-    marginLeft: "3%"
+    fontSize: 28,
+    marginLeft: "3%",
+    color: 'black'
   },
   button:{
     backgroundColor:"green",
-    marginVertical: "3%",
-    paddingVertical: "2%"
+    margin: "3%",
+    paddingVertical: "2%", 
+    borderRadius: 50
   }
 });

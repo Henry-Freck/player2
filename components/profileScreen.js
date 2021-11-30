@@ -6,6 +6,7 @@ import {Picker} from '@react-native-picker/picker';
 import * as SecureStore from "expo-secure-store"
 import * as ImagePicker from "expo-image-picker";
 import { getApps, initializeApp } from "firebase/app";
+import refreshButton from "./matchScreen"
 
 const firebaseConfig = {
   apiKey: "AIzaSyB8pxsOuMbDeJvX9dqzymkRROLIGZtSwAY",
@@ -62,6 +63,7 @@ export default class ProfileScreen extends Component {
       displayName: "",
       image: null,
       uploading: false,
+      imageURL: "https://firebasestorage.googleapis.com/v0/b/player2-5b498.appspot.com/o/images%2Ftest-image?alt=media&token=bf60b066-5000-4e8a-bfb7-a187bdbd873e"
     }
   }
 
@@ -93,6 +95,24 @@ export default class ProfileScreen extends Component {
       if("main" in user.data()){
         main = user.data().main
       }
+      var imagePostfix;
+      if ("imageTag" in user.data()){
+        imagePostfix = user.data().imageTag
+        // console.log(imagePostfix)
+      }else{
+        imagePostfix = "test-image"
+      }
+
+      let imageRef = firebase.storage().ref('/images/' + imagePostfix);
+      // console.log('/images/' + imagePostfix)
+      imageRef
+        .getDownloadURL()
+        .then((url) => {
+          //from url you can fetched the uploaded image easily
+          this.setState({imageURL: url});
+          console.log(this.state.imageURL)
+        })
+        .catch((e) => console.log('getting downloadURL of image error => ', e));
     }
 
     this.setState({
@@ -182,15 +202,29 @@ export default class ProfileScreen extends Component {
 
   onChooseImagePress = async() =>{
     let userUUID = await SecureStore.getItemAsync("userUUID")
-    let result = await ImagePicker.launchImageLibraryAsync()
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4,3],
+    })
     console.log("launched image picker")
     if(!result.cancelled){
       console.log("result not cancelled")
-      this.uploadImage(result.uri, userUUID)
+      await this.uploadImage(result.uri, userUUID)
       console.log("put")
       firebase.firestore().collection("Users").doc(userUUID).set({
         imageTag: userUUID,
       }, {merge: true})
+
+    let imageRef = firebase.storage().ref('/images/' + userUUID);
+    // console.log('/images/' + imagePostfix)
+    imageRef
+      .getDownloadURL()
+      .then((url) => {
+        //from url you can fetched the uploaded image easily
+        this.setState({imageURL: url});
+        console.log(this.state.imageURL)
+      })
+      .catch((e) => console.log('getting downloadURL of image error => ', e));
     }
   }
 
@@ -202,46 +236,31 @@ export default class ProfileScreen extends Component {
 
     var ref = firebase.storage().ref().child("images/"+imageName)
     console.log("ref made")
-    return ref.put(blob)
-    
+    return ref.put(blob) 
 
   }
 
   render(){
-    let {image} = [this.state.image, this.state.uploading]
+    // console.log(this.state.imageURl)
     return(
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <Text style={styles.textInputHeaders}>Riot Name</Text>
         <TextInput
-          /*TODO: make the text input field take up the width of the screen, not sure why that isn't working*/
+          
           style={styles.textField}
           onChangeText={text => this.onDisplayNameChange(text)}
           defaultValue={this.state.displayName}
-          //TODO: prefill this field if the user has it set in their firestore document
-          placeholder='Enter your Riot Name and discriminator (i.e. John#1234)'
+          
+          placeholder='Enter your Riot Name and discriminator'
           keyboardAppearance="dark"
           placeholderTextColor="#004f00"
           selectionColor="green"
         />
-        {/* <Text style={styles.fieldHeaders}>Current Game</Text>
-        <SectionedMultiSelect
-          items={gameListOptions}
-          IconRenderer={Icon}
-          uniqueKey='id'
-          subKey='children'
-          selectText="Select the games you play"
-          showDropDowns={false}
-          readOnlyHeadings={true}
-          onSelectedItemsChange={this.onGameSelectorItemsChange}
-          selectedItems={this.state.selectedItems}
-          showChips={false}
-          hideSearch={true}
-          single={true}
-        /> */}
+       
         <Text style={styles.pickerHeaders}>Current Rank</Text>
 
-        {/*TODO: add more profile information entry fields (probably some sort of check list for what games, along with a text entry for gamertag, rank, etc. for each game)*/}
+        
 
         <Picker
           itemStyle = {styles.pickerItems}
@@ -297,9 +316,13 @@ export default class ProfileScreen extends Component {
           <Picker.Item label="Viper" value="Viper" color = {pickerColor}/>
           <Picker.Item label="Yoru" value="Yoru" color = {pickerColor}/>
         </Picker>
-        
-        <Button title="choose image" onPress = {this.onChooseImagePress} />
 
+        <Text style = {styles.textInputHeaders}>Profile Image</Text>
+        <Image style = {{width: 400, height: 300, marginBottom: 10}} source = {{uri: this.state.imageURL}}></Image>
+        
+        <TouchableOpacity onPress = {this.onChooseImagePress} style = {styles.Button}>
+          <Text style = {styles.ButtonContent}>Change Profile Photo</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
     );
@@ -336,7 +359,8 @@ const styles = StyleSheet.create({
     width: '95%',
     marginBottom: "7%",
     alignSelf: "center",
-    color: "green"
+    color: "green",
+    fontSize: 18
   },
   //style for the View that holds the ScrollView, not even sure if we need this anymore but I don't want to break anything
   container: {
@@ -344,7 +368,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: "5%"
+    paddingTop: "5%",
+    
   },
   pickerItems:{
     color: "#FFFFFF"
@@ -356,6 +381,21 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     paddingHorizontal: "3%",
     fontSize: 18,
-    marginBottom: "3%"
+    marginBottom: 10
+  },
+  Button: {
+    backgroundColor: "green",
+    borderRadius: 50,
+    // borderWidth:0,
+    // padding:10,
+    margin:5,
+    marginBottom: 15
+    // width:"45%"
+  },
+  ButtonContent: {
+    margin: 20,
+    fontSize: 18,
+    textAlign: 'center',
+    color: "black"
   },
 });
